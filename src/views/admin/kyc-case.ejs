@@ -1,0 +1,37 @@
+<nav class="breadcrumb"><a href="/admin/kyc">KYC</a> › <span class="gold">#<%= k.id %></span></nav>
+<div class="split-r">
+  <div>
+    <div class="panel"><div class="row-between"><h1 style="margin:0;font-size:22px">پرونده #<%= k.id %> — <%= k.kind.toUpperCase() %></h1>
+      <span class="badge <%= tone(k.status) %>"><%= statusLabel(k.status) %></span></div>
+      <dl class="kv" style="margin-top:16px">
+        <% [['کاربر',k.display_name],['تلفن',k.phone],['ایمیل',k.email],['نام قانونی',k.legal_name],
+            ['شماره ملی',k.national_id],['تاریخ تولد',k.birth_date],['کشور',k.country],
+            ['نام شرکت',k.company_name],['شماره ثبت',k.company_reg_no],['شناسه مالیاتی',k.company_tax_no],
+            ['دفتر تجاری',k.trade_registry],['آدرس قانونی',k.legal_address],['شخص مجاز',k.authorized_person],
+            ['کد شخص مجاز',k.authorized_person_id],['مالک ذی‌نفع',k.beneficial_owner]].forEach(function(x){ if(x[1]){ %>
+          <dt><%= x[0] %></dt><dd><%= x[1] %></dd><% }}) %>
+      </dl>
+    </div>
+    <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">مدارک</b>
+      <div class="grid g3"><% docs.forEach(function(d){ %>
+        <a class="card" href="<%= d.file_path %>" target="_blank">
+          <% if((d.mime||'').startsWith('image')){ %><img src="<%= d.file_path %>" style="aspect-ratio:4/3;object-fit:cover">
+          <% } else { %><div style="aspect-ratio:4/3;display:grid;place-items:center;font-size:28px">📄</div><% } %>
+          <div style="padding:9px"><div class="small bold"><%= d.doc_type %></div>
+          <div class="xs dim mono truncate"><%= d.hash.slice(0,20) %>…</div></div></a><% }) %></div>
+      <% if(!docs.length){ %><div class="small dim">مدرکی بارگذاری نشده.</div><% } %>
+    </div>
+    <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">تاریخچه</b>
+      <% events.forEach(function(e){ %><div class="row-between small" style="padding:7px 0;border-top:1px solid var(--line)">
+        <span><%= e.from_status||'—' %> → <b><%= e.to_status %></b></span><span class="xs dim"><%= e.note||'' %> · <%= date(e.created_at) %></span></div><% }) %>
+    </div>
+  </div>
+  <aside class="sticky"><form method="post" action="/admin/kyc/<%= k.id %>/decide" class="panel">
+    <b style="display:block;margin-bottom:12px">تصمیم بررسی</b>
+    <div class="field"><label>وضعیت</label><select name="decision">
+      <% ['approved','need_correction','rejected','under_review','suspended'].forEach(function(s){ %><option value="<%= s %>"><%= statusLabel(s) %></option><% }) %></select></div>
+    <div class="field"><label>دلیل (به کاربر نمایش داده می‌شود)</label><textarea name="reason"></textarea></div>
+    <div class="field"><label>یادداشت داخلی</label><textarea name="note"></textarea></div>
+    <button class="btn btn-primary btn-block">ثبت تصمیم</button>
+  </form></aside>
+</div>

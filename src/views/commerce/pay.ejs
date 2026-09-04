@@ -1,0 +1,18 @@
+<div class="section"><div class="wrap" style="max-width:520px">
+  <div class="panel">
+    <h1>پرداخت سفارش</h1>
+    <div class="glass" style="padding:16px;margin:16px 0"><div class="row-between"><span><%= o.order_no %></span>
+      <b class="big gold mono"><%= money(o.total,o.currency) %></b></div></div>
+    <form method="post">
+      <div class="field"><label>روش پرداخت</label><select name="provider">
+        <option value="mock">کارت بانکی (درگاه آزمایشی)</option>
+        <option value="bank_transfer">حواله بانکی</option>
+        <option value="wallet">کیف پول (موجودی: <%= money((wallet?wallet.balance_minor:0)/100) %>)</option>
+      </select></div>
+      <label class="check" style="margin-bottom:16px"><input type="checkbox" name="escrow" value="1" checked>
+        <span>🔒 پرداخت امن امانی — وجه تا تأیید دریافت کالا نزد پلتفرم می‌ماند.</span></label>
+      <button class="btn btn-primary btn-block btn-lg">پرداخت</button>
+    </form>
+    <p class="hint center" style="margin-top:14px">تراکنش دارای کلید Idempotency است؛ ارسال مجدد باعث پرداخت دوباره نمی‌شود.</p>
+  </div>
+</div></div>

@@ -1,0 +1,13 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>کیف پول</h1>
+  <div class="panel center" style="background:var(--hero)">
+    <div class="k dim">موجودی قابل برداشت</div>
+    <div style="font-size:38px;font-weight:800" class="gold mono"><%= money(w.balance_minor/100, w.currency) %></div>
+  </div>
+  <div class="table-wrap" style="margin-top:20px"><table class="data">
+    <thead><tr><th>تاریخ</th><th>شرح</th><th>جهت</th><th>مبلغ</th><th>مانده</th></tr></thead>
+    <tbody><% entries.forEach(function(e){ %><tr><td class="small"><%= date(e.created_at) %></td><td class="small"><%= e.reason %> #<%= e.ref_id||'' %></td>
+      <td><span class="badge <%= e.direction==='credit'?'ok':'err' %> xs"><%= e.direction %></span></td>
+      <td class="mono"><%= money(e.amount_minor/100,e.currency) %></td><td class="mono dim"><%= money(e.balance_after_minor/100,e.currency) %></td></tr><% }) %></tbody></table></div>
+  <% if(!entries.length){ %><div class="empty-state"><div class="ic">💳</div>تراکنشی ثبت نشده.</div><% } %>
+</div></div>

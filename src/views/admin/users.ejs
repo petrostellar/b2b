@@ -1,0 +1,24 @@
+<div class="row-between"><h1>کاربران</h1><span class="muted"><%= num(total) %> کاربر</span></div>
+<form method="get" class="row" style="margin:16px 0">
+  <input name="q" value="<%= query.q||'' %>" placeholder="جستجو…" style="max-width:280px">
+  <select name="status" style="max-width:180px"><option value="">همه وضعیت‌ها</option>
+    <% ['active','suspended','banned','deleted'].forEach(function(s){ %><option value="<%= s %>" <%= query.status===s?'selected':'' %>><%= s %></option><% }) %></select>
+  <button class="btn btn-primary btn-sm">فیلتر</button></form>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>#</th><th>کاربر</th><th>تماس</th><th>کشور</th><th>آگهی</th><th>Trust</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+  <tbody><% rows.forEach(function(u){ %>
+    <tr><td class="mono"><%= u.id %></td>
+    <td><a href="/u/<%= u.id %>" class="row"><span class="avatar av-32"><%= (u.display_name||'?').charAt(0) %></span>
+      <div><b class="small"><%= u.business_name||u.display_name %></b>
+      <div class="xs dim"><%= u.is_admin?'ADMIN · '+(u.admin_role||''):'' %> <%= u.kyc_ok?'✔':'' %></div></div></a></td>
+    <td class="small mono"><%= u.phone||u.email||'—' %></td><td><%= u.country||'—' %></td>
+    <td class="mono"><%= num(u.lc) %></td><td class="mono"><%= u.trust_score %></td>
+    <td><span class="badge <%= tone(u.status) %>"><%= u.status %></span></td>
+    <td><form method="post" action="/admin/users/<%= u.id %>/x" class="row" style="gap:4px"
+        onsubmit="this.action='/admin/users/<%= u.id %>/'+this.act.value">
+      <select name="act" style="min-height:31px;height:31px;font-size:12px;width:auto;padding:0 24px 0 8px">
+        <option value="activate">فعال</option><option value="suspend">تعلیق</option><option value="ban">مسدود</option>
+        <option value="make-admin">ادمین کن</option><option value="revoke-admin">لغو ادمین</option></select>
+      <button class="btn btn-soft btn-sm">اجرا</button></form></td></tr>
+  <% }) %></tbody></table></div>
+<%- include('../partials/pagination', {page: page, pages: pages}) %>

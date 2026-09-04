@@ -1,0 +1,29 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/sell">کالاهای من</a> › <span class="gold">به‌روزرسانی موجودی</span></nav>
+  <h1>به‌روزرسانی موجودی</h1>
+  <div class="split-r">
+    <form method="post" class="panel">
+      <div class="grid g2">
+        <div class="field"><label>موجودی فعلی</label><input value="<%= l.inventory %>" disabled></div>
+        <div class="field"><label class="req">موجودی جدید</label><input type="number" step="any" name="new_stock" required></div>
+      </div>
+      <div class="grid g3">
+        <div class="field"><label>واحد</label><input name="unit" value="<%= l.inventory_unit||'' %>"></div>
+        <div class="field"><label>وضعیت</label><select name="availability">
+          <% [['in_stock','موجود'],['made_to_order','تولید به سفارش'],['pre_order','پیش‌سفارش'],['sold_out','اتمام موجودی']].forEach(function(x){ %>
+          <option value="<%= x[0] %>" <%= l.availability===x[0]?'selected':'' %>><%= x[1] %></option><% }) %></select></div>
+        <div class="field"><label>آستانه کمبود</label><input type="number" step="any" name="low_stock_threshold" value="<%= l.low_stock_threshold||'' %>"></div>
+      </div>
+      <div class="field"><label>تاریخ شارژ مجدد</label><input type="date" name="restock_date"></div>
+      <label class="check"><input type="checkbox" name="notify" value="1"><span>اطلاع به خریداران ذخیره‌کننده</span></label>
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:18px">ثبت موجودی</button>
+    </form>
+    <aside><div class="panel"><b style="display:block;margin-bottom:12px">تاریخچه موجودی</b>
+      <% history.forEach(function(h){ %>
+      <div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+        <span class="dim xs"><%= date(h.created_at) %></span>
+        <span><span class="dim"><%= num(h.old_stock) %></span> → <b class="gold"><%= num(h.new_stock) %></b></span></div><% }) %>
+      <% if(!history.length){ %><div class="small dim">—</div><% } %>
+    </div></aside>
+  </div>
+</div></div>

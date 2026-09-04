@@ -1,0 +1,35 @@
+<div class="section-sm"><div class="wrap" style="max-width:900px">
+  <div class="split-r" style="grid-template-columns:1fr 320px">
+    <div class="card" style="aspect-ratio:9/16;max-height:74vh;position:relative;overflow:hidden">
+      <% if(s.media_kind==='video'){ %><video src="<%= s.media_path %>" controls autoplay style="width:100%;height:100%;object-fit:cover"></video>
+      <% } else if(s.media_path){ %><img src="<%= s.media_path %>" style="width:100%;height:100%;object-fit:cover">
+      <% } else { %><div style="width:100%;height:100%;background:var(--hero);display:grid;place-items:center;font-size:50px">🎬</div><% } %>
+      <div style="position:absolute;inset:0 0 auto 0;padding:14px;background:linear-gradient(rgba(0,0,0,.7),transparent)">
+        <a href="/u/<%= s.user_id %>" class="row" style="gap:8px"><span class="avatar av-40"><%= (s.business_name||s.display_name||'?').charAt(0) %></span>
+          <div><b class="small" style="color:#fff"><%= s.business_name||s.display_name %></b>
+          <div class="xs" style="color:#bbb"><%= date(s.created_at) %></div></div></a>
+      </div>
+      <div style="position:absolute;inset:auto 0 0 0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.85))">
+        <p class="small" style="color:#eee"><%= s.caption||'' %></p>
+        <div class="row">
+          <% if (target) { %><a class="btn btn-primary btn-sm" href="/product/<%= target.slug||target.id %>"><%= s.cta_label||'مشاهده کالا' %></a><% } %>
+          <a class="btn btn-soft btn-sm" href="/messages/start?user=<%= s.user_id %>">💬 پیام</a>
+          <span class="spacer"></span><span class="xs" style="color:#bbb">👁 <%= num(s.views_count) %></span>
+        </div>
+      </div>
+    </div>
+    <aside>
+      <% if (isOwner) { %>
+      <div class="panel"><b style="display:block;margin-bottom:12px">بازدیدکنندگان (<%= num(viewers.length) %>)</b>
+        <% viewers.forEach(function(v){ %><a href="/u/<%= v.id %>" class="row" style="padding:7px 0;border-top:1px solid var(--line)">
+          <span class="avatar av-32"><%= (v.display_name||'?').charAt(0) %></span><span class="small"><%= v.display_name %></span></a><% }) %>
+        <% if(!viewers.length){ %><div class="small dim">هنوز بازدیدی ثبت نشده.</div><% } %>
+      </div><% } %>
+      <div class="panel" style="margin-top:<%= isOwner?'18px':'0' %>">
+        <a class="btn btn-ghost btn-block btn-sm" href="/stories">همه استوری‌ها</a>
+        <% if (next) { %><a class="btn btn-primary btn-block btn-sm" style="margin-top:8px" href="/stories/<%= next.id %>">استوری بعدی ›</a><% } %>
+        <a class="btn btn-soft btn-block btn-sm" style="margin-top:8px" href="/report?type=story&id=<%= s.id %>">⚑ گزارش</a>
+      </div>
+    </aside>
+  </div>
+</div></div>

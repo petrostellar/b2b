@@ -1,0 +1,110 @@
+<div class="section-sm"><div class="wrap">
+  <nav class="breadcrumb">
+    <a href="/"><%= t('nav_home') %></a> ›
+    <a href="/products"><%= t('nav_products') %></a>
+    <% if (category) { %> › <span class="gold"><%= pick(category,'name') %></span><% } %>
+  </nav>
+
+  <% if (category) { %>
+  <div class="panel" style="background:var(--hero);margin-bottom:22px">
+    <div class="row-between">
+      <div>
+        <div class="row"><span style="font-size:32px"><%= category.icon||'📦' %></span>
+          <div><h1 style="margin:0;font-size:28px"><%= pick(category,'name') %></h1>
+          <p class="small" style="margin:4px 0 0"><%= category.description || '' %></p></div></div>
+      </div>
+      <div class="center"><div class="big bold mono"><%= num(result.total) %></div><div class="xs dim"><%= t('nav_products') %></div></div>
+    </div>
+    <% if (subcats && subcats.length) { %>
+    <div class="row" style="margin-top:16px;gap:7px">
+      <% subcats.forEach(function(s){ %><a class="chip" href="/category/<%= s.slug %>"><%= pick(s,'name') %> <span class="dim xs">(<%= num(s.cnt) %>)</span></a><% }) %>
+    </div><% } %>
+  </div>
+  <% } else { %>
+    <h1><%= title %></h1>
+    <p class="muted"><%= num(result.total) %> نتیجه یافت شد</p>
+  <% } %>
+
+  <div class="split">
+    <!-- FILTER SIDEBAR (backend-driven) -->
+    <aside class="panel sticky">
+      <div class="row-between" style="margin-bottom:14px"><b><%= t('filters') %></b><a href="<%= path %>" class="xs gold"><%= t('reset') %></a></div>
+      <form method="get" action="<%= path %>">
+        <% if (category) { %><input type="hidden" name="category_id" value="<%= category.id %>"><% } %>
+        <div class="field"><label><%= t('search') %></label><input name="q" value="<%= f.q||'' %>" placeholder="…"></div>
+
+        <% if (!category) { %>
+        <div class="field"><label>دسته‌بندی</label>
+          <select name="category_id"><option value=""><%= t('cat_all') %></option>
+            <% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= String(f.category_id)===String(c.id)?'selected':'' %>><%= pick(c,'name') %> (<%= c.cnt %>)</option><% }) %>
+          </select></div>
+        <% } %>
+
+        <div class="field"><label>نوع معامله</label>
+          <select name="type"><option value="">همه</option>
+            <% facets.types.forEach(function(x){ %><option value="<%= x.code %>" <%= f.type===x.code?'selected':'' %>><%= x.code %> (<%= x.c %>)</option><% }) %>
+          </select></div>
+
+        <div class="field"><label>کشور مبدأ</label>
+          <select name="country"><option value="">همه</option>
+            <% facets.countries.forEach(function(x){ %><option value="<%= x.code %>" <%= f.country===x.code?'selected':'' %>><%= x.code %> (<%= x.c %>)</option><% }) %>
+          </select></div>
+
+        <div class="field"><label>شهر</label><input name="city" value="<%= f.city||'' %>"></div>
+
+        <div class="field"><label><%= t('price') %></label>
+          <div class="input-group">
+            <input type="number" name="min_price" placeholder="از" value="<%= f.min_price||'' %>">
+            <input type="number" name="max_price" placeholder="تا" value="<%= f.max_price||'' %>">
+          </div>
+          <div class="hint">بازه موجود: <%= num(facets.priceRange.lo) %> – <%= num(facets.priceRange.hi) %></div>
+        </div>
+
+        <div class="field"><label><%= t('currency') %></label>
+          <select name="currency"><option value="">همه</option>
+            <% facets.currencies.forEach(function(x){ %><option value="<%= x.code %>" <%= f.currency===x.code?'selected':'' %>><%= x.code %> (<%= x.c %>)</option><% }) %>
+          </select></div>
+
+        <div class="field"><label>حداکثر <%= t('moq') %></label><input type="number" name="max_moq" value="<%= f.max_moq||'' %>"></div>
+
+        <div class="field"><label>نوع فروشنده</label>
+          <select name="seller_type"><option value="">همه</option>
+            <% facets.sellerTypes.forEach(function(x){ %><option value="<%= x.code %>" <%= f.seller_type===x.code?'selected':'' %>><%= x.code %> (<%= x.c %>)</option><% }) %>
+          </select></div>
+
+        <div class="field"><label>حداقل امتیاز فروشنده</label>
+          <select name="min_rating"><option value="">همه</option>
+            <% [5,4,3].forEach(function(n){ %><option value="<%= n %>" <%= String(f.min_rating)===String(n)?'selected':'' %>>★ <%= n %>+</option><% }) %>
+          </select></div>
+
+        <div class="field"><label>گواهی</label><input name="certificate" value="<%= f.certificate||'' %>" placeholder="ISO, HACCP, CE…"></div>
+
+        <label class="check" style="margin-bottom:9px"><input type="checkbox" name="verified" value="1" <%= f.verified?'checked':'' %>><span>فقط احراز هویت شده</span></label>
+        <label class="check" style="margin-bottom:9px"><input type="checkbox" name="in_stock" value="1" <%= f.in_stock?'checked':'' %>><span>فقط موجود</span></label>
+        <label class="check" style="margin-bottom:16px"><input type="checkbox" name="negotiable" value="1" <%= f.negotiable?'checked':'' %>><span>قیمت قابل مذاکره</span></label>
+
+        <button class="btn btn-primary btn-block"><%= t('apply') %></button>
+      </form>
+    </aside>
+
+    <div>
+      <div class="row-between" style="margin-bottom:16px">
+        <div class="row" style="gap:6px">
+          <% [['relevance','مرتبط‌ترین'],['newest','جدیدترین'],['price_asc','ارزان‌ترین'],['price_desc','گران‌ترین'],['popular','پربازدید'],['rating','بهترین امتیاز']].forEach(function(s){ %>
+            <a class="chip <%= (f.sort||'relevance')===s[0]?'on':'' %>" href="<%= buildQS({sort:s[0], page:null}) %>"><%= s[1] %></a>
+          <% }) %>
+        </div>
+        <span class="small dim"><%= num(result.total) %> نتیجه</span>
+      </div>
+
+      <% if (result.rows.length) { %>
+        <div class="grid g3"><% result.rows.forEach(function(l){ %><%- include('../partials/pcard', {l:l}) %><% }) %></div>
+        <%- include('../partials/pagination', {page: result.page, pages: result.pages}) %>
+      <% } else { %>
+        <div class="empty-state"><div class="ic">🔍</div><h3><%= t('empty') %></h3>
+          <p>فیلترها را تغییر دهید یا درخواست خرید ثبت کنید تا فروشندگان به شما پیشنهاد دهند.</p>
+          <a class="btn btn-primary" href="/buy-requests/new"><%= t('hero_cta2') %></a></div>
+      <% } %>
+    </div>
+  </div>
+</div></div>

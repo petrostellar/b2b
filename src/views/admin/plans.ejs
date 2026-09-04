@@ -1,0 +1,32 @@
+<h1>پلن‌های عضویت</h1>
+<div class="split-r">
+  <div class="grid g2">
+    <% rows.forEach(function(p){ %>
+    <div class="card card-pad"><div class="row-between"><b><%= p.name_fa %></b><span class="badge gold"><%= p.code %></span></div>
+      <div class="gold big bold mono" style="margin:10px 0"><%= money(p.price_minor/100,p.currency) %></div>
+      <div class="small dim"><%= num(p.months) %> ماه + <%= num(p.bonus_months) %> هدیه · <%= num(p.discount_percent) %>٪ تخفیف</div>
+      <div style="margin:12px 0"><% p.features.forEach(function(f){ %><div class="xs">✓ <%= f.label_fa %> <span class="dim">(<%= f.fkey %>=<%= f.value %>)</span></div><% }) %></div>
+      <form method="post" action="/admin/plans/<%= p.id %>/delete"><button class="btn btn-danger btn-sm">حذف</button></form>
+    </div><% }) %>
+  </div>
+  <form method="post" class="panel sticky">
+    <b style="display:block;margin-bottom:12px">پلن جدید</b>
+    <div class="field"><input name="code" placeholder="code (pro-6)" required></div>
+    <div class="field"><input name="name_fa" placeholder="نام فارسی" required></div>
+    <div class="field"><input name="name_en" placeholder="English name" required></div>
+    <div class="grid g2"><div class="field"><input type="number" name="months" placeholder="ماه" required></div>
+      <div class="field"><input type="number" step="any" name="price" placeholder="قیمت" required></div>
+      <div class="field"><input type="number" name="discount_percent" placeholder="٪ تخفیف"></div>
+      <div class="field"><input type="number" name="bonus_months" placeholder="ماه هدیه"></div></div>
+    <div class="field"><input name="badge" placeholder="نشان (پرفروش)"></div>
+    <label class="check" style="margin-bottom:12px"><input type="checkbox" name="highlight" value="1"><span>برجسته</span></label>
+    <b class="small">امکانات (Entitlements)</b>
+    <% for(let i=0;i<4;i++){ %>
+    <div class="grid g3" style="margin-top:6px">
+      <div class="field"><input name="feature_key" placeholder="contact_access"></div>
+      <div class="field"><input name="feature_label" placeholder="دسترسی شماره"></div>
+      <div class="field"><input name="feature_value" placeholder="on"></div>
+    </div><% } %>
+    <button class="btn btn-primary btn-block">ساخت پلن</button>
+  </form>
+</div>

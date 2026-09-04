@@ -1,0 +1,37 @@
+<h1>نظارت، اعتماد و اختلاف</h1>
+<div class="panel" style="margin-top:16px"><b style="display:block;margin-bottom:12px">گزارش‌های تخلف</b>
+  <div class="table-wrap"><table class="data"><thead><tr><th>هدف</th><th>دلیل</th><th>گزارش‌دهنده</th><th>وضعیت</th><th></th></tr></thead>
+  <tbody><% reports.forEach(function(rp){ %><tr><td class="small"><%= rp.target_type %> #<%= rp.target_id %></td>
+    <td class="small"><%= rp.reason %><div class="xs dim clamp2"><%= rp.details||'' %></div></td>
+    <td class="small dim"><%= rp.reporter||'سیستم' %></td><td><span class="badge <%= tone(rp.status) %> xs"><%= rp.status %></span></td>
+    <td><form method="post" action="/admin/moderation/report/<%= rp.id %>" class="row" style="gap:4px">
+      <select name="status" style="min-height:30px;height:30px;font-size:12px;width:auto;padding:0 22px 0 6px">
+        <% ['open','reviewing','actioned','dismissed'].forEach(function(s){ %><option><%= s %></option><% }) %></select>
+      <button class="btn btn-soft btn-sm">✓</button></form></td></tr><% }) %></tbody></table></div>
+</div>
+<div class="grid g2" style="margin-top:20px">
+  <div class="panel"><b style="display:block;margin-bottom:12px">نظرات</b>
+    <% reviews.forEach(function(rv){ %><div class="row-between" style="padding:9px 0;border-top:1px solid var(--line)">
+      <div><b class="small"><%= rv.reviewer %> → <%= rv.target %></b><div class="xs dim"><%= '★'.repeat(rv.score) %> <%= (rv.body||'').slice(0,60) %></div></div>
+      <form method="post" action="/admin/moderation/review/<%= rv.id %>" class="row" style="gap:4px">
+        <select name="status" style="min-height:30px;height:30px;font-size:12px;width:auto;padding:0 22px 0 6px">
+          <option>published</option><option>pending</option><option>removed</option></select>
+        <button class="btn btn-soft btn-sm">✓</button></form></div><% }) %>
+  </div>
+  <div class="panel"><b style="display:block;margin-bottom:12px">اختلافات</b>
+    <% disputes.forEach(function(d){ %><div style="padding:10px 0;border-top:1px solid var(--line)">
+      <div class="row-between"><b class="small"><%= d.order_no %></b><span class="badge <%= tone(d.status) %> xs"><%= d.status %></span></div>
+      <div class="xs dim clamp2"><%= d.claim %></div>
+      <form method="post" action="/admin/moderation/dispute/<%= d.id %>" class="row" style="gap:4px;margin-top:6px">
+        <select name="status" style="min-height:30px;height:30px;font-size:12px;width:auto;padding:0 22px 0 6px">
+          <% ['open','mediation','decided','refunded','closed'].forEach(function(s){ %><option><%= s %></option><% }) %></select>
+        <input name="decision" placeholder="رأی" style="min-height:30px;height:30px;font-size:12px">
+        <button class="btn btn-soft btn-sm">✓</button></form></div><% }) %>
+    <% if(!disputes.length){ %><div class="small dim">اختلافی ثبت نشده ✓</div><% } %>
+  </div>
+</div>
+<div class="panel" style="margin-top:20px"><b style="display:block;margin-bottom:12px">پیام‌های علامت‌گذاری‌شده (ضد کلاهبرداری)</b>
+  <% flagged.forEach(function(m){ %><div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+    <span><b><%= m.display_name %>:</b> <%= (m.body||'').slice(0,90) %></span><span class="xs dim"><%= date(m.created_at) %></span></div><% }) %>
+  <% if(!flagged.length){ %><div class="small dim">موردی نیست ✓</div><% } %>
+</div>

@@ -1,0 +1,15 @@
+<div class="section"><div class="wrap narrow">
+  <span class="eyebrow">GUIDE</span><h1><%= g.title %></h1>
+  <ol class="steps">
+  <% g.steps.forEach(function(s,i){ %>
+    <li class="panel" style="margin-bottom:12px">
+      <div class="row"><span class="step-num"><%= num(i+1) %></span><b><%= s[0] %></b></div>
+      <p class="dim small" style="margin:8px 0 0"><%= s[1] %></p>
+    </li>
+  <% }) %>
+  </ol>
+  <div class="row" style="gap:10px;margin-top:18px">
+    <a class="btn gold" href="/sell/new">شروع کنید</a>
+    <a class="btn ghost" href="/help">مرکز راهنما</a>
+  </div>
+</div></div>

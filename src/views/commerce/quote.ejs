@@ -1,0 +1,48 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/quotes">پیش‌فاکتورها</a> › <span class="gold">#<%= qt.id %></span></nav>
+  <div class="panel">
+    <div class="row-between"><h1 style="margin:0">پیش‌فاکتور #<%= qt.id %> <span class="badge">v<%= qt.version %></span></h1>
+      <span class="badge <%= tone(qt.status) %>"><%= statusLabel(qt.status) %></span></div>
+    <div class="grid g2" style="margin-top:18px">
+      <dl class="kv">
+        <dt>فروشنده</dt><dd><a href="/u/<%= qt.seller_id %>"><%= qt.seller_name %></a></dd>
+        <dt>خریدار</dt><dd><a href="/u/<%= qt.buyer_id %>"><%= qt.buyer_name %></a></dd>
+        <dt>موضوع</dt><dd><%= qt.rfq_title||qt.listing_title||'—' %></dd>
+        <dt>قیمت واحد</dt><dd class="gold bold"><%= money(qt.price,qt.currency) %> <%= qt.unit?('/ '+qt.unit):'' %></dd>
+        <dt>مقدار</dt><dd><%= num(qt.quantity) %></dd>
+        <dt>MOQ</dt><dd><%= num(qt.moq) %></dd>
+      </dl>
+      <dl class="kv">
+        <dt>مالیات</dt><dd><%= money(qt.tax,qt.currency) %></dd>
+        <dt>حمل</dt><dd><%= money(qt.shipping,qt.currency) %></dd>
+        <dt>اینکوترمز</dt><dd><%= qt.incoterm||'—' %></dd>
+        <dt>آماده‌سازی</dt><dd><%= qt.lead_time_days? num(qt.lead_time_days)+' روز':'—' %></dd>
+        <dt>معتبر تا</dt><dd><%= qt.valid_until?date(qt.valid_until):'—' %></dd>
+        <dt>شرایط پرداخت</dt><dd><%= qt.payment_terms||'—' %></dd>
+      </dl>
+    </div>
+    <div class="glass" style="padding:16px;margin-top:16px">
+      <div class="row-between"><b>مبلغ کل</b>
+        <span class="big bold gold mono"><%= money((qt.price||0)*(qt.quantity||1)+(qt.tax||0)+(qt.shipping||0), qt.currency) %></span></div>
+    </div>
+    <% if(qt.seller_note){ %><p class="small" style="margin-top:14px"><b>یادداشت فروشنده:</b> <%= qt.seller_note %></p><% } %>
+    <% if(qt.buyer_note){ %><p class="small"><b>یادداشت خریدار:</b> <%= qt.buyer_note %></p><% } %>
+
+    <div class="row" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
+      <% if (['sent','countered'].includes(qt.status)) { %>
+        <form method="post" action="/quotes/<%= qt.id %>/accept"><button class="btn btn-ok">✓ پذیرش و ایجاد سفارش</button></form>
+        <a class="btn btn-ghost" href="/quotes/new?counter=<%= qt.id %>&<%= qt.buy_request_id?'rfq='+qt.buy_request_id:'listing='+qt.listing_id %>">↔ پیشنهاد متقابل</a>
+        <form method="post" action="/quotes/<%= qt.id %>/reject"><button class="btn btn-danger">✕ رد</button></form>
+      <% } %>
+      <a class="btn btn-soft" href="/messages/start?user=<%= isBuyer?qt.seller_id:qt.buyer_id %>">💬 گفتگو</a>
+    </div>
+  </div>
+  <% if (history.length > 1) { %>
+  <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">تاریخچه مذاکره</b>
+    <% history.forEach(function(h){ %>
+    <div class="row-between small" style="padding:9px 0;border-top:1px solid var(--line)">
+      <span>v<%= h.version %> — <%= date(h.created_at) %></span>
+      <span class="mono gold"><%= money(h.price,h.currency) %></span>
+      <span class="badge <%= tone(h.status) %> xs"><%= statusLabel(h.status) %></span></div><% }) %>
+  </div><% } %>
+</div></div>

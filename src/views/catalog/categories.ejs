@@ -1,0 +1,16 @@
+<div class="section"><div class="wrap">
+  <span class="eyebrow">TAXONOMY</span><h1><%= t('cat_all') %></h1>
+  <div class="grid g3">
+    <% tree.forEach(function(c){ %>
+    <div class="panel anim">
+      <a href="/category/<%= c.slug %>" class="row" style="margin-bottom:12px">
+        <span style="font-size:26px"><%= c.icon||'📦' %></span>
+        <div><b><%= pick(c,'name') %></b><div class="xs dim"><%= num(c.cnt) %> کالا</div></div>
+      </a>
+      <% c.children.forEach(function(s){ %>
+        <a href="/category/<%= s.slug %>" class="row-between small" style="padding:5px 0;border-top:1px solid var(--line)">
+          <span><%= pick(s,'name') %></span><span class="dim xs"><%= num(s.cnt) %></span></a>
+      <% }) %>
+    </div><% }) %>
+  </div>
+</div></div>

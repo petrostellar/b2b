@@ -1,0 +1,43 @@
+<footer class="site">
+  <div class="wrap">
+    <div class="grid g5" style="gap:32px">
+      <div style="grid-column:span 2">
+        <a href="/" class="brand" style="margin-bottom:14px"><span class="mark">M</span><%= siteName %></a>
+        <p class="small" style="max-width:340px"><%= t('footer_about') %></p>
+        <div class="row" style="margin-top:16px">
+          <span class="badge">🔒 ISO 27001 ready</span>
+          <span class="badge">✔ KVKK / GDPR</span>
+        </div>
+      </div>
+      <div>
+        <h5><%= t('nav_products') %></h5>
+        <% rootCategories.slice(0,7).forEach(function(c){ %><a href="/category/<%= c.slug %>"><%= pick(c,'name') %></a><% }) %>
+        <a href="/products"><%= t('view_all') %> →</a>
+      </div>
+      <div>
+        <h5>Platform</h5>
+        <a href="/suppliers"><%= t('nav_suppliers') %></a>
+        <a href="/buyers"><%= t('nav_buyers') %></a>
+        <a href="/buy-requests"><%= t('nav_requests') %></a>
+        <a href="/stories"><%= t('nav_stories') %></a>
+        <a href="/pricing"><%= t('nav_pricing') %></a>
+        <a href="/blog"><%= t('nav_blog') %></a>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <a href="/about"><%= t('nav_about') %></a>
+        <a href="/contact"><%= t('nav_contact') %></a>
+        <a href="/help"><%= t('nav_help') %></a>
+        <a href="/guide/seller">Seller guide</a>
+        <a href="/guide/buyer">Buyer guide</a>
+        <a href="/guide/kyc">KYC guide</a>
+        <a href="/page/terms">Terms</a>
+        <a href="/page/privacy">Privacy</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <%= new Date().getFullYear() %> <%= siteName %>. <%= t('rights') %></span>
+      <span>Istanbul · Dubai · Shenzhen &nbsp;|&nbsp; <a href="/sitemap.xml">sitemap</a> · <a href="/api/v1/docs">API</a></span>
+    </div>
+  </div>
+</footer>

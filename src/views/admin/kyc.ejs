@@ -1,0 +1,12 @@
+<h1>بررسی KYC / KYB</h1>
+<div class="tabs"><% ['submitted','under_review','need_correction','approved','rejected'].forEach(function(s){ %>
+  <a href="/admin/kyc?status=<%= s %>" class="<%= st===s?'on':'' %>"><%= statusLabel(s) %><span class="count">(<%= num(counts[s]) %>)</span></a><% }) %></div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>#</th><th>کاربر</th><th>نوع</th><th>نام قانونی</th><th>ارسال</th><th></th></tr></thead>
+  <tbody><% rows.forEach(function(k){ %><tr><td class="mono"><%= k.id %></td>
+    <td class="small"><a href="/u/<%= k.user_id %>"><%= k.display_name %></a><div class="xs dim mono"><%= k.phone %></div></td>
+    <td><span class="badge"><%= k.kind.toUpperCase() %></span></td>
+    <td class="small"><%= k.legal_name||k.company_name||'—' %></td>
+    <td class="small dim"><%= date(k.submitted_at) %></td>
+    <td><a class="btn btn-primary btn-sm" href="/admin/kyc/<%= k.id %>">بررسی</a></td></tr><% }) %></tbody></table></div>
+<% if(!rows.length){ %><div class="empty-state"><div class="ic">🪪</div>موردی در این وضعیت نیست.</div><% } %>

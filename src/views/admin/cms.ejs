@@ -1,0 +1,44 @@
+<h1>مدیریت محتوا و SEO</h1>
+<div class="split-r">
+  <div>
+    <div class="panel"><b style="display:block;margin-bottom:12px">صفحات</b>
+      <% pages.forEach(function(p){ %><div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+        <a href="/page/<%= p.slug %>"><%= p.title_fa %> <span class="dim xs">/<%= p.slug %></span></a>
+        <span class="badge <%= tone(p.status) %> xs"><%= p.status %></span></div><% }) %>
+    </div>
+    <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">مقالات</b>
+      <% posts.forEach(function(p){ %><div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+        <a href="/blog/<%= p.slug %>"><%= p.title %></a><span class="xs dim"><%= date(p.created_at) %></span></div><% }) %>
+      <form method="post" action="/admin/cms/post" style="margin-top:14px">
+        <div class="field"><input name="title" placeholder="عنوان مقاله" required></div>
+        <div class="field"><input name="excerpt" placeholder="خلاصه"></div>
+        <div class="field"><textarea name="body" placeholder="متن" required></textarea></div>
+        <button class="btn btn-ghost btn-block btn-sm">+ انتشار مقاله</button></form>
+    </div>
+    <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">سوالات متداول</b>
+      <% faqs.forEach(function(f){ %><div class="small" style="padding:7px 0;border-top:1px solid var(--line)"><b><%= f.q_fa %></b><div class="xs dim"><%= f.a_fa %></div></div><% }) %>
+      <form method="post" action="/admin/cms/faq" style="margin-top:14px">
+        <div class="field"><input name="group_name" placeholder="گروه (خریدار/فروشنده)"></div>
+        <div class="field"><input name="q_fa" placeholder="سوال (فا)" required></div>
+        <div class="field"><textarea name="a_fa" placeholder="پاسخ (فا)" required></textarea></div>
+        <div class="field"><input name="q_en" placeholder="Question (en)"></div>
+        <div class="field"><textarea name="a_en" placeholder="Answer (en)"></textarea></div>
+        <button class="btn btn-ghost btn-block btn-sm">+ افزودن FAQ</button></form>
+    </div>
+  </div>
+  <form method="post" action="/admin/cms/page" class="panel sticky">
+    <b style="display:block;margin-bottom:12px">ساخت / ویرایش صفحه</b>
+    <div class="field"><input name="slug" placeholder="slug (about)" required></div>
+    <div class="field"><input name="title_fa" placeholder="عنوان فارسی" required></div>
+    <div class="field"><textarea name="body_fa" placeholder="متن فارسی (HTML مجاز)" required></textarea></div>
+    <div class="field"><input name="title_en" placeholder="English title" required></div>
+    <div class="field"><textarea name="body_en" placeholder="English body" required></textarea></div>
+    <div class="field"><input name="title_tr" placeholder="Türkçe başlık"></div>
+    <div class="field"><textarea name="body_tr" placeholder="Türkçe içerik"></textarea></div>
+    <div class="field"><input name="title_ar" placeholder="العنوان بالعربية"></div>
+    <div class="field"><textarea name="body_ar" placeholder="المحتوى"></textarea></div>
+    <div class="field"><input name="seo_title" placeholder="SEO title"></div>
+    <div class="field"><textarea name="seo_description" placeholder="SEO description"></textarea></div>
+    <button class="btn btn-primary btn-block">ذخیره صفحه</button>
+  </form>
+</div>

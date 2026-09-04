@@ -1,0 +1,78 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <span class="eyebrow">TRUST CENTER</span><h1>مرکز احراز هویت</h1>
+  <% if (kyc) { %>
+    <div class="alert <%= kyc.status==='approved'?'ok':(kyc.status==='rejected'?'err':'warn') %>">
+      وضعیت پرونده: <b><%= statusLabel(kyc.status) %></b>
+      <% if(kyc.decision_reason){ %> — <%= kyc.decision_reason %><% } %>
+      <% if(kyc.review_note){ %><div class="small"><%= kyc.review_note %></div><% } %>
+    </div>
+  <% } %>
+
+  <div class="grid g3" style="margin-bottom:20px">
+    <div class="card card-pad"><b class="small">✅ نمونه قابل قبول</b>
+      <ul class="small dim" style="padding-inline-start:18px;margin:8px 0 0"><li>تصویر واضح و رنگی</li><li>تمام گوشه‌های مدرک دیده شود</li><li>بدون انعکاس نور</li></ul></div>
+    <div class="card card-pad"><b class="small">❌ نمونه رد شده</b>
+      <ul class="small dim" style="padding-inline-start:18px;margin:8px 0 0"><li>تصویر تار یا برش‌خورده</li><li>کپی سیاه‌وسفید</li><li>مدرک منقضی</li></ul></div>
+    <div class="card card-pad"><b class="small">✍️ دست‌نوشته</b>
+      <div class="small dim" style="margin-top:8px">متن «جهت احراز هویت در میدان — تاریخ» را روی کاغذ بنویسید و همراه کارت شناسایی در دست، عکس بگیرید.</div></div>
+  </div>
+
+  <% if (!kyc || ['draft','need_correction','rejected'].includes(kyc.status)) { %>
+  <form method="post" enctype="multipart/form-data" class="panel">
+    <input type="hidden" name="kind" value="<%= query.kind==='kyb'?'kyb':'kyc' %>">
+    <% if (query.kind !== 'kyb') { %>
+    <fieldset><legend>اطلاعات هویتی</legend>
+      <div class="grid g2">
+        <div class="field"><label class="req">نام کامل قانونی</label><input name="legal_name" required></div>
+        <div class="field"><label class="req">شماره ملی / پاسپورت</label><input name="national_id" required></div>
+        <div class="field"><label>تاریخ تولد</label><input type="date" name="birth_date"></div>
+        <div class="field"><label>کشور صدور</label><select name="country">
+          <% countries.forEach(function(c){ %><option value="<%= c.code %>"><%= pick(c,'name') %></option><% }) %></select></div>
+        <div class="field"><label>تاریخ صدور</label><input type="date" name="issue_date"></div>
+        <div class="field"><label>تاریخ انقضا</label><input type="date" name="expiry_date"></div>
+      </div>
+    </fieldset>
+    <fieldset><legend>مدارک</legend>
+      <div class="grid g3">
+        <div class="field"><label class="req">روی مدرک</label><input type="file" name="id_front" accept="image/*" required></div>
+        <div class="field"><label>پشت مدرک</label><input type="file" name="id_back" accept="image/*"></div>
+        <div class="field"><label class="req">عکس با مدرک و دست‌نوشته</label><input type="file" name="selfie_declaration" accept="image/*" required></div>
+      </div>
+    </fieldset>
+    <% } else { %>
+    <fieldset><legend>اطلاعات شرکت (KYB)</legend>
+      <div class="grid g2">
+        <div class="field"><label class="req">نام شرکت / برند</label><input name="company_name" required></div>
+        <div class="field"><label class="req">شماره ثبت</label><input name="company_reg_no" required></div>
+        <div class="field"><label>شناسه مالیاتی</label><input name="company_tax_no"></div>
+        <div class="field"><label>شماره دفتر تجاری</label><input name="trade_registry"></div>
+        <div class="field"><label>آدرس قانونی</label><input name="legal_address"></div>
+        <div class="field"><label>شخص مجاز</label><input name="authorized_person"></div>
+        <div class="field"><label>کد ملی شخص مجاز</label><input name="authorized_person_id"></div>
+        <div class="field"><label>مالک ذی‌نفع نهایی</label><input name="beneficial_owner"></div>
+      </div>
+      <div class="grid g2">
+        <div class="field"><label class="req">مجوز/گواهی ثبت شرکت</label><input type="file" name="trade_license" required></div>
+        <div class="field"><label>گواهی مالیاتی</label><input type="file" name="tax_cert"></div>
+      </div>
+    </fieldset>
+    <% } %>
+    <button class="btn btn-primary btn-lg btn-block">ارسال برای بررسی</button>
+  </form>
+  <% } %>
+
+  <% if (docs.length) { %>
+  <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">مدارک ارسالی</b>
+    <div class="table-wrap"><table class="data"><thead><tr><th>نوع</th><th>وضعیت</th><th>هش</th><th>تاریخ</th></tr></thead>
+    <tbody><% docs.forEach(function(d){ %><tr><td class="small"><%= d.doc_type %></td>
+      <td><span class="badge <%= tone(d.status) %> xs"><%= d.status %></span></td>
+      <td class="xs mono dim truncate" style="max-width:180px"><%= d.hash %></td><td class="small"><%= date(d.created_at) %></td></tr><% }) %></tbody></table></div>
+  </div><% } %>
+
+  <% if (history.length) { %>
+  <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">تاریخچه پرونده‌ها</b>
+    <% history.forEach(function(h){ %><div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+      <span><%= h.kind.toUpperCase() %> #<%= h.id %></span><span class="badge <%= tone(h.status) %> xs"><%= statusLabel(h.status) %></span>
+      <span class="xs dim"><%= date(h.created_at) %></span></div><% }) %>
+  </div><% } %>
+</div></div>

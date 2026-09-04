@@ -1,0 +1,18 @@
+<h1>سلامت سیستم</h1>
+<div class="grid g4" style="margin:16px 0">
+  <div class="stat-card"><div class="v mono"><%= num(uptime) %>s</div><div class="k">Uptime</div></div>
+  <div class="stat-card"><div class="v mono"><%= num(mem) %> MB</div><div class="k">Memory RSS</div></div>
+  <div class="stat-card"><div class="v mono" style="font-size:19px"><%= node %></div><div class="k">Node.js</div></div>
+  <div class="stat-card"><div class="v mono"><%= num(tables.length) %></div><div class="k">جداول دیتابیس</div></div>
+</div>
+<div class="panel"><b style="display:block;margin-bottom:12px">جداول و تعداد رکورد</b>
+  <div class="grid g4"><% tables.forEach(function(t){ %>
+    <div class="row-between small" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px">
+      <span class="mono xs"><%= t.name %></span><b class="mono"><%= num(t.rows) %></b></div><% }) %></div>
+</div>
+<div class="panel" style="margin-top:18px"><b>Endpoints</b>
+  <div class="row" style="gap:6px;margin-top:10px">
+    <a class="chip" href="/healthz">/healthz</a><a class="chip" href="/readyz">/readyz</a>
+    <a class="chip" href="/api/v1/docs">/api/v1/docs</a><a class="chip" href="/sitemap.xml">/sitemap.xml</a>
+    <a class="chip" href="/robots.txt">/robots.txt</a></div>
+</div>

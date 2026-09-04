@@ -1,0 +1,35 @@
+<h1>مدیریت افزونه‌ها</h1>
+<p class="muted">Plugin SDK: هر افزونه با <code>manifest.json</code> ثبت می‌شود؛ فعال/غیرفعال‌سازی بدون تغییر هسته.</p>
+<div class="split-r">
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>افزونه</th><th>نسخه</th><th>سازنده</th><th>سلامت</th><th>وضعیت</th><th></th></tr></thead>
+    <tbody><% rows.forEach(function(p){ %><tr><td><b class="small"><%= p.name %></b><div class="xs dim mono"><%= p.plugin_id %></div>
+      <div class="xs dim"><%= p.description||'' %></div></td>
+      <td class="mono"><%= p.version %></td><td class="small dim"><%= p.author||'—' %></td>
+      <td><span class="badge <%= p.health==='ok'?'ok':'warn' %> xs"><%= p.health %></span></td>
+      <td><span class="badge <%= p.status==='enabled'?'ok':'muted' %> xs"><%= p.status %></span></td>
+      <td><div class="row" style="gap:3px">
+        <form method="post" action="/admin/plugins/<%= p.id %>/enable"><button class="btn btn-ok btn-sm">فعال</button></form>
+        <form method="post" action="/admin/plugins/<%= p.id %>/disable"><button class="btn btn-soft btn-sm">غیرفعال</button></form>
+        <form method="post" action="/admin/plugins/<%= p.id %>/uninstall"><button class="btn btn-danger btn-sm">✕</button></form>
+      </div></td></tr><% }) %></tbody></table></div>
+  <form method="post" action="/admin/plugins/install" class="panel sticky">
+    <b style="display:block;margin-bottom:12px">نصب افزونه (manifest.json)</b>
+    <div class="field"><textarea name="manifest" style="min-height:230px;font-family:monospace;font-size:12px" required>{
+  "id": "sms-netgsm",
+  "name": "NetGSM SMS Provider",
+  "version": "1.0.0",
+  "author": "Mydan",
+  "description": "ارسال پیامک OTP از طریق NetGSM",
+  "requiredCoreVersion": ">=1.0.0",
+  "permissions": ["notifications.send"],
+  "backendModules": ["sms"],
+  "frontendSlots": [],
+  "adminMenus": [{"label":"SMS Settings","path":"/admin/plugins/sms-netgsm"}],
+  "settingsSchema": {"apiKey":"string","sender":"string"},
+  "eventsConsumed": ["otp.requested"],
+  "healthChecks": ["/health"]
+}</textarea></div>
+    <button class="btn btn-primary btn-block">نصب و اعتبارسنجی</button>
+  </form>
+</div>

@@ -1,0 +1,33 @@
+<article class="p-card anim">
+  <a href="/product/<%= l.slug || l.id %>" class="thumb">
+    <% if (l.cover) { %><img src="<%= l.cover %>" alt="<%= l.title %>" loading="lazy">
+    <% } else { %><div style="width:100%;height:100%;display:grid;place-items:center;font-size:36px;opacity:.28">📦</div><% } %>
+    <div class="tags">
+      <% if (l.is_featured) { %><span class="badge gold"><%= t('featured') %></span><% } %>
+      <% if (l.boost_rank > 0) { %><span class="badge info">↑ Sponsored</span><% } %>
+      <% if (l.listing_type === 'wholesale') { %><span class="badge">Wholesale</span><% } %>
+      <% if (l.listing_type === 'retail') { %><span class="badge">Retail</span><% } %>
+      <% if (l.listing_type === 'service') { %><span class="badge">Service</span><% } %>
+    </div>
+    <span class="fav" data-bookmark="listing:<%= l.id %>">☆</span>
+  </a>
+  <div class="body">
+    <div class="meta"><a href="/category/<%= l.cat_slug %>" class="gold xs"><%= pick(l,'cat_name') %></a></div>
+    <a href="/product/<%= l.slug || l.id %>" class="title clamp2"><%= l.title %></a>
+    <div class="price">
+      <% if (l.price_on_request) { %><span style="font-size:14px" class="muted">قیمت بر اساس استعلام</span>
+      <% } else { %><%= money(l.price, l.currency) %><span class="xs muted"> / <%= l.price_unit || l.measure_unit || '' %></span><% } %>
+    </div>
+    <div class="meta">
+      <span>📦 <%= t('moq') %>: <%= num(l.moq) %> <%= l.moq_unit||'' %></span>
+      <span>🏷 <%= t('inventory') %>: <%= num(l.inventory) %></span>
+    </div>
+    <div class="meta"><span>📍 <%= l.origin_city || l.seller_city || '' %><%= l.origin_country ? ', '+l.origin_country : '' %></span></div>
+  </div>
+  <a class="foot" href="/u/<%= l.seller_id %>">
+    <span class="avatar av-24"><% if (l.seller_avatar) { %><img src="<%= l.seller_avatar %>"><% } else { %><%= (l.business_name||l.seller_name||'S').charAt(0) %><% } %></span>
+    <span class="truncate" style="flex:1"><%= l.business_name || l.seller_name %></span>
+    <% if (l.kyc_ok) { %><span class="badge ok xs">✔</span><% } %>
+    <% if (l.seller_rating) { %><span class="xs gold">★ <%= l.seller_rating %></span><% } %>
+  </a>
+</article>

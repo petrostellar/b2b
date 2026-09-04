@@ -1,0 +1,30 @@
+<h1>تنظیمات سیستم</h1>
+<div class="split-r">
+  <form method="post" class="panel">
+    <b style="display:block;margin-bottom:12px">تنظیمات عمومی</b>
+    <% settings.forEach(function(s){ %>
+    <div class="field"><label><%= s.skey %></label><input name="s_<%= s.skey %>" value="<%= s.svalue %>"></div><% }) %>
+    <button class="btn btn-primary btn-block">ذخیره تنظیمات</button>
+  </form>
+  <div>
+    <div class="panel"><b style="display:block;margin-bottom:12px">Feature Flags</b>
+      <% flags.forEach(function(f){ %>
+      <form method="post" action="/admin/settings/flag" class="row-between" style="padding:8px 0;border-top:1px solid var(--line)">
+        <input type="hidden" name="fkey" value="<%= f.fkey %>"><input type="hidden" name="description" value="<%= f.description||'' %>">
+        <div><b class="small"><%= f.fkey %></b><div class="xs dim"><%= f.description||'' %></div></div>
+        <label class="switch"><input type="checkbox" name="enabled" value="1" <%= f.enabled?'checked':'' %> onchange="this.form.submit()"><span></span></label>
+      </form><% }) %>
+      <form method="post" action="/admin/settings/flag" style="margin-top:14px">
+        <div class="grid g2"><div class="field"><input name="fkey" placeholder="flag_key" required></div>
+          <div class="field"><input name="description" placeholder="توضیح"></div></div>
+        <label class="check" style="margin-bottom:10px"><input type="checkbox" name="enabled" value="1" checked><span>فعال</span></label>
+        <button class="btn btn-ghost btn-block btn-sm">+ افزودن Flag</button></form>
+    </div>
+    <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">پوسته‌ها</b>
+      <div class="grid g2"><% themes.forEach(function(th){ %>
+        <a class="card card-pad card-hover center" href="/admin?theme=<%= th.code %>"><b class="small"><%= th.name %></b>
+          <div class="xs dim"><%= th.code %></div></a><% }) %></div>
+      <p class="hint">پوسته پیش‌فرض سایت را از کلید <code>default_theme</code> در تنظیمات عمومی تغییر دهید.</p>
+    </div>
+  </div>
+</div>

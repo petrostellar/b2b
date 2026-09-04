@@ -1,0 +1,9 @@
+<div class="section"><div class="wrap" style="max-width:520px">
+  <div class="panel"><h1>گزارش تخلف</h1>
+    <form method="post"><input type="hidden" name="type" value="<%= type||'other' %>"><input type="hidden" name="id" value="<%= id||0 %>">
+      <div class="field"><label>دلیل</label><select name="reason">
+        <% ['محتوای نامناسب','کلاهبرداری','اطلاعات نادرست','کالای تقلبی','اسپم','نقض مالکیت فکری','سایر'].forEach(function(x){ %><option><%= x %></option><% }) %></select></div>
+      <div class="field"><label>توضیحات</label><textarea name="details"></textarea></div>
+      <button class="btn btn-danger btn-block">ارسال گزارش</button></form>
+  </div>
+</div></div>

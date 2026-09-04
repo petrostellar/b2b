@@ -1,0 +1,35 @@
+<div class="hero"><div class="wrap inner" style="padding:56px 0;text-align:center">
+  <span class="eyebrow">MEMBERSHIP</span><h1>عضویت ویژه میدان</h1>
+  <p style="max-width:600px;margin-inline:auto">دسترسی به شماره تماس خریداران، رتبه بالاتر در جستجو، ظرفیت بیشتر آگهی و آمار پیشرفته.</p>
+</div></div>
+<div class="section"><div class="wrap">
+  <% if (current) { %><div class="alert ok">عضویت فعال شما: <b><%= pick(current,'name') %></b> تا <%= date(current.ends_at) %></div><% } %>
+  <div class="grid g4">
+    <% plans.forEach(function(p){ %>
+    <div class="card card-pad anim" style="<%= p.highlight?'border-color:var(--accent);box-shadow:var(--shadow)':'' %>">
+      <% if(p.badge){ %><span class="badge gold"><%= p.badge %></span><% } %>
+      <h3 style="margin:12px 0 4px"><%= pick(p,'name') %></h3>
+      <div class="small dim"><%= num(p.months) %> ماه<%= p.bonus_months?` + ${p.bonus_months} ماه هدیه`:'' %></div>
+      <div style="font-size:30px;font-weight:800;margin:14px 0" class="gold mono"><%= money(p.price_minor/100, p.currency) %></div>
+      <% if(p.discount_percent){ %><span class="badge ok xs"><%= num(p.discount_percent) %>٪ تخفیف</span><% } %>
+      <div style="margin:16px 0">
+        <% p.features.forEach(function(f){ %><div class="row small" style="padding:5px 0"><span class="gold">✓</span><span><%= f.label_fa %></span></div><% }) %>
+      </div>
+      <% if (user) { %>
+        <form method="post" action="/pricing/<%= p.id %>/subscribe"><button class="btn <%= p.highlight?'btn-primary':'btn-ghost' %> btn-block">انتخاب و پرداخت</button></form>
+      <% } else { %><a class="btn btn-ghost btn-block" href="/auth/login">ورود برای خرید</a><% } %>
+    </div><% }) %>
+  </div>
+  <div class="panel" style="margin-top:28px">
+    <b>مقایسه امکانات</b>
+    <div class="table-wrap" style="margin-top:12px"><table class="data">
+      <thead><tr><th>امکان</th><% plans.forEach(function(p){ %><th><%= pick(p,'name') %></th><% }) %></tr></thead>
+      <tbody>
+        <% var keys = {}; plans.forEach(function(p){ p.features.forEach(function(f){ keys[f.fkey]=f.label_fa }) }); %>
+        <% Object.entries(keys).forEach(function(k){ %>
+        <tr><td class="small"><%= k[1] %></td>
+        <% plans.forEach(function(p){ var f = p.features.find(function(x){return x.fkey===k[0]}); %>
+          <td><%= f ? (f.value==='on'?'✓':f.value) : '—' %></td><% }) %></tr><% }) %>
+      </tbody></table></div>
+  </div>
+</div></div>

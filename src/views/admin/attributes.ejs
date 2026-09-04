@@ -1,0 +1,26 @@
+<h1>مشخصه‌های پویا</h1>
+<div class="split-r">
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>کلید</th><th>برچسب</th><th>نوع</th><th>گزینه‌ها</th><th>الزامی</th><th></th></tr></thead>
+    <tbody><% rows.forEach(function(a){ %><tr><td class="mono xs"><%= a.akey %></td>
+      <td class="small"><%= a.label_fa %><% if(a.cat){ %><div class="xs dim"><%= a.cat %></div><% } %></td>
+      <td><span class="badge xs"><%= a.data_type %></span></td>
+      <td class="xs dim truncate" style="max-width:200px"><%= a.options||'—' %></td>
+      <td><%= a.required?'✔':'—' %></td>
+      <td><form method="post" action="/admin/attributes/<%= a.id %>/delete"><button class="btn btn-soft btn-sm">✕</button></form></td></tr><% }) %></tbody></table></div>
+  <form method="post" class="panel sticky">
+    <b style="display:block;margin-bottom:12px">افزودن مشخصه</b>
+    <div class="field"><label class="req">دسته‌بندی</label><select name="category_id" required>
+      <% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= cid===c.id?'selected':'' %>><%= c.parent_name?c.parent_name+' › ':'' %><%= c.name_fa %></option><% }) %></select></div>
+    <div class="field"><label class="req">کلید (لاتین)</label><input name="akey" required placeholder="packaging"></div>
+    <div class="field"><label class="req">برچسب فارسی</label><input name="label_fa" required></div>
+    <div class="field"><label>English</label><input name="label_en"></div>
+    <div class="field"><label class="req">نوع داده</label><select name="data_type" required>
+      <% ['text','textarea','integer','decimal','boolean','select','multiselect','date','unit_value','color'].forEach(function(x){ %><option><%= x %></option><% }) %></select></div>
+    <div class="field"><label>گزینه‌ها (با کاما)</label><input name="options" placeholder="کارتن, گونی, پالت"></div>
+    <div class="field"><label>واحد</label><input name="unit"></div>
+    <div class="field"><label>ترتیب</label><input type="number" name="sort_order" value="0"></div>
+    <label class="check" style="margin-bottom:14px"><input type="checkbox" name="required" value="1"><span>الزامی</span></label>
+    <button class="btn btn-primary btn-block">افزودن</button>
+  </form>
+</div>

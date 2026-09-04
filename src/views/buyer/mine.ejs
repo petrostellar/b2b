@@ -1,0 +1,20 @@
+<div class="section-sm"><div class="wrap">
+  <div class="row-between"><h1>درخواست‌های خرید من</h1><a class="btn btn-primary" href="/buy-requests/new">+ درخواست جدید</a></div>
+  <div class="tabs">
+    <% [['approved','تأیید شده'],['pending','در انتظار بررسی'],['rejected','رد شده'],['draft','پیش‌نویس'],['closed','بسته/واگذار']].forEach(function(x){ %>
+      <a href="/my-requests?tab=<%= x[0] %>" class="<%= tab===x[0]?'on':'' %>"><%= x[1] %><span class="count">(<%= num(counts[x[0]]) %>)</span></a><% }) %>
+  </div>
+  <% if (rows.length) { %>
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>عنوان</th><th>مقدار</th><th>قیمت هدف</th><th>پیشنهادها</th><th>وضعیت</th><th></th></tr></thead>
+    <tbody><% rows.forEach(function(b){ %>
+      <tr><td><a href="/buy-requests/<%= b.id %>"><b class="small"><%= b.title %></b></a><div class="xs dim"><%= date(b.created_at) %></div></td>
+      <td class="mono"><%= num(b.quantity) %> <%= b.unit||'' %></td>
+      <td class="mono"><%= b.target_price?money(b.target_price,b.currency):'—' %></td>
+      <td><span class="badge info"><%= num(b.quote_count) %></span></td>
+      <td><span class="badge <%= tone(b.status) %>"><%= statusLabel(b.status) %></span>
+        <% if(b.rejection_reason){ %><div class="xs err-text"><%= b.rejection_reason %></div><% } %></td>
+      <td><a class="btn btn-soft btn-sm" href="/buy-requests/<%= b.id %>">مشاهده</a></td></tr>
+    <% }) %></tbody></table></div>
+  <% } else { %><div class="empty-state"><div class="ic">📋</div>موردی نیست.<div><a class="btn btn-primary" style="margin-top:14px" href="/buy-requests/new">ثبت درخواست</a></div></div><% } %>
+</div></div>

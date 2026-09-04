@@ -1,0 +1,17 @@
+<div class="section-sm"><div class="wrap">
+  <div class="row-between"><h1>پیش‌فاکتورها</h1>
+    <div class="row"><a class="chip <%= role==='seller'?'on':'' %>" href="/quotes?role=seller">ارسالی من (فروشنده)</a>
+      <a class="chip <%= role==='buyer'?'on':'' %>" href="/quotes?role=buyer">دریافتی من (خریدار)</a></div></div>
+  <% if (rows.length) { %>
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>#</th><th>موضوع</th><th>طرف مقابل</th><th>قیمت</th><th>مقدار</th><th>نسخه</th><th>وضعیت</th><th></th></tr></thead>
+    <tbody><% rows.forEach(function(qt){ %>
+      <tr><td class="mono">#<%= qt.id %></td>
+      <td class="small"><%= qt.rfq_title || qt.listing_title || '—' %></td>
+      <td class="small"><%= role==='seller'? qt.buyer_name : qt.seller_name %></td>
+      <td class="mono gold"><%= money(qt.price,qt.currency) %></td><td class="mono"><%= num(qt.quantity) %></td>
+      <td>v<%= qt.version %></td><td><span class="badge <%= tone(qt.status) %>"><%= statusLabel(qt.status) %></span></td>
+      <td><a class="btn btn-soft btn-sm" href="/quotes/<%= qt.id %>">مشاهده</a></td></tr>
+    <% }) %></tbody></table></div>
+  <% } else { %><div class="empty-state"><div class="ic">📄</div>پیش‌فاکتوری وجود ندارد.</div><% } %>
+</div></div>

@@ -1,0 +1,73 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <div class="row-between"><h1>ویرایش پروفایل و غرفه</h1><span class="badge gold"><%= completion.score %>% تکمیل</span></div>
+  <form method="post" enctype="multipart/form-data" class="panel">
+    <fieldset><legend>هویت</legend>
+      <div class="grid g3">
+        <div class="field"><label>تصویر پروفایل</label><input type="file" name="avatar" accept="image/*"></div>
+        <div class="field"><label>کاور غرفه</label><input type="file" name="cover" accept="image/*"></div>
+        <div class="field"><label>کاتالوگ PDF</label><input type="file" name="catalog_pdf" accept="application/pdf"></div>
+      </div>
+      <div class="grid g3">
+        <div class="field"><label class="req">نام</label><input name="first_name" value="<%= user.first_name||'' %>" required></div>
+        <div class="field"><label class="req">نام خانوادگی</label><input name="last_name" value="<%= user.last_name||'' %>" required></div>
+        <div class="field"><label>نام نمایشی</label><input name="display_name" value="<%= user.display_name||'' %>"></div>
+      </div>
+      <div class="field"><label>ایمیل</label><input type="email" name="email" value="<%= user.email||'' %>"></div>
+    </fieldset>
+    <fieldset><legend>کسب‌وکار</legend>
+      <div class="field"><label>نام تجاری / شرکت</label><input name="business_name" value="<%= p.business_name||'' %>"></div>
+      <div class="field"><label>درباره کسب‌وکارتان بنویسید</label><textarea name="about" style="min-height:130px"><%= p.about||'' %></textarea></div>
+      <div class="grid g2">
+        <div class="field"><label>صنعت</label><input name="industry" value="<%= p.industry||'' %>"></div>
+        <div class="field"><label>حوزه اصلی</label><select name="category_id"><option value="">—</option>
+          <% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= p.category_id===c.id?'selected':'' %>><%= pick(c,'name') %></option><% }) %></select></div>
+      </div>
+      <div class="field"><label>نوع کسب‌وکار</label><select name="seller_type"><option value="">—</option>
+        <% [['manufacturer','تولیدکننده'],['distributor','توزیع‌کننده'],['wholesaler','عمده‌فروش'],['retailer','خرده‌فروش'],['exporter','صادرکننده'],['importer','واردکننده'],['service','خدمات'],['logistics','لجستیک']].forEach(function(x){ %>
+        <option value="<%= x[0] %>" <%= p.seller_type===x[0]?'selected':'' %>><%= x[1] %></option><% }) %></select></div>
+    </fieldset>
+    <fieldset><legend>موقعیت و تماس</legend>
+      <div class="grid g3">
+        <div class="field"><label>کشور</label><select name="country"><option value="">—</option>
+          <% countries.forEach(function(c){ %><option value="<%= c.code %>" <%= p.country===c.code?'selected':'' %>><%= pick(c,'name') %></option><% }) %></select></div>
+        <div class="field"><label>استان</label><input name="province" value="<%= p.province||'' %>"></div>
+        <div class="field"><label>شهر</label><input name="city" value="<%= p.city||'' %>"></div>
+      </div>
+      <div class="field"><label>آدرس</label><input name="address" value="<%= p.address||'' %>"></div>
+      <div class="grid g2">
+        <div class="field"><label>عرض جغرافیایی</label><input name="lat" value="<%= p.lat||'' %>"></div>
+        <div class="field"><label>طول جغرافیایی</label><input name="lng" value="<%= p.lng||'' %>"></div>
+      </div>
+      <div class="field"><label>ساعات کاری</label><input name="business_hours" value="<%= p.business_hours||'' %>" placeholder="شنبه تا پنجشنبه ۹–۱۸"></div>
+      <label class="check"><input type="checkbox" name="phone_public" value="1" <%= p.phone_public?'checked':'' %>><span>نمایش عمومی شماره تماس</span></label>
+    </fieldset>
+    <fieldset><legend>شبکه‌ها و وب</legend>
+      <div class="grid g2">
+        <div class="field"><label>وب‌سایت</label><input name="website" value="<%= p.website||'' %>"></div>
+        <div class="field"><label>اینستاگرام</label><input name="social_instagram" value="<%= p.social_instagram||'' %>"></div>
+        <div class="field"><label>لینکدین</label><input name="social_linkedin" value="<%= p.social_linkedin||'' %>"></div>
+        <div class="field"><label>واتس‌اپ</label><input name="social_whatsapp" value="<%= p.social_whatsapp||'' %>"></div>
+      </div>
+      <div class="field"><label>ویدئوی معرفی شرکت (لینک)</label><input name="company_video" value="<%= p.company_video||'' %>"></div>
+    </fieldset>
+    <fieldset><legend>تجارت بین‌الملل</legend>
+      <div class="grid g2">
+        <div class="field"><label>بازارهای صادراتی</label><input name="export_markets" value="<%= p.export_markets||'' %>" placeholder="EU, GCC, CIS"></div>
+        <div class="field"><label>بازارهای وارداتی</label><input name="import_markets" value="<%= p.import_markets||'' %>"></div>
+        <div class="field"><label>اینکوترمزهای پشتیبانی‌شده</label><input name="incoterms" value="<%= p.incoterms||'' %>" placeholder="FOB, CIF, DAP"></div>
+        <div class="field"><label>ترجیح MOQ</label><input name="moq_preference" value="<%= p.moq_preference||'' %>"></div>
+      </div>
+    </fieldset>
+    <fieldset><legend>ترجیحات</legend>
+      <div class="grid g3">
+        <div class="field"><label>زبان</label><select name="locale">
+          <% locales.forEach(function(l){ %><option value="<%= l.code %>" <%= user.locale===l.code?'selected':'' %>><%= l.name %></option><% }) %></select></div>
+        <div class="field"><label>ارز</label><select name="currency">
+          <% currencies.forEach(function(c){ %><option value="<%= c.code %>" <%= user.currency===c.code?'selected':'' %>><%= c.code %></option><% }) %></select></div>
+        <div class="field"><label>پوسته</label><select name="theme">
+          <% themes.forEach(function(th){ %><option value="<%= th.code %>" <%= user.theme===th.code?'selected':'' %>><%= th.name %></option><% }) %></select></div>
+      </div>
+    </fieldset>
+    <button class="btn btn-primary btn-lg btn-block">ذخیره تغییرات</button>
+  </form>
+</div></div>

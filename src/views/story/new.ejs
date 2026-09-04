@@ -1,0 +1,16 @@
+<div class="section-sm"><div class="wrap" style="max-width:560px">
+  <h1>ثبت استوری</h1>
+  <form method="post" enctype="multipart/form-data" class="panel">
+    <div class="field"><label class="req">رسانه (نسبت ۹:۱۶ پیشنهاد می‌شود)</label><input type="file" name="media" accept="image/*,video/*" required></div>
+    <div class="field"><label>کپشن</label><textarea name="caption"></textarea></div>
+    <div class="grid g2">
+      <div class="field"><label>نوع CTA</label><select name="cta_type"><option value="">بدون CTA</option>
+        <option value="listing">کالا</option><option value="profile">پروفایل</option><option value="rfq">درخواست خرید</option></select></div>
+      <div class="field"><label>متن دکمه</label><input name="cta_label" placeholder="مشاهده کالا"></div>
+    </div>
+    <div class="field"><label>کالای مرتبط</label><select name="cta_target_id"><option value="">—</option>
+      <% listings.forEach(function(l){ %><option value="<%= l.id %>"><%= l.title %></option><% }) %></select></div>
+    <div class="field"><label>مدت انتشار (روز)</label><select name="duration_days"><option value="1">۱ روز</option><option value="3">۳ روز</option><option value="7">۷ روز</option></select></div>
+    <button class="btn btn-primary btn-block btn-lg">انتشار استوری</button>
+  </form>
+</div></div>

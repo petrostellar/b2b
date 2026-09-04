@@ -1,0 +1,29 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/sell">کالاهای من</a> › <a href="/product/<%= l.slug||l.id %>"><%= l.title %></a> › <span class="gold">به‌روزرسانی قیمت</span></nav>
+  <h1>به‌روزرسانی قیمت</h1>
+  <div class="split-r">
+    <form method="post" class="panel">
+      <div class="field"><label>قیمت فعلی</label><input value="<%= l.price||'' %>" disabled></div>
+      <div class="grid g3">
+        <div class="field"><label class="req">قیمت جدید</label><input type="number" step="any" name="new_price" required></div>
+        <div class="field"><label>ارز</label><select name="currency"><% currencies.forEach(function(c){ %><option value="<%= c.code %>" <%= l.currency===c.code?'selected':'' %>><%= c.code %></option><% }) %></select></div>
+        <div class="field"><label>واحد قیمت</label><input name="price_unit" value="<%= l.price_unit||'' %>"></div>
+      </div>
+      <div class="field"><label>اعمال از تاریخ</label><input type="date" name="effective_from"></div>
+      <div class="field"><label>دلیل تغییر (اختیاری)</label><input name="reason" placeholder="نوسان بازار، تغییر هزینه حمل…"></div>
+      <label class="check"><input type="checkbox" name="notify" value="1" checked>
+        <span>اطلاع‌رسانی به <%= num(watchers) %> خریدار علاقه‌مند</span></label>
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:18px">ثبت قیمت جدید</button>
+    </form>
+    <aside>
+      <div class="panel"><b style="display:block;margin-bottom:12px">تاریخچه قیمت</b>
+        <% history.forEach(function(h){ %>
+        <div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+          <span class="dim xs"><%= date(h.created_at) %></span>
+          <span><span class="dim"><%= num(h.old_price) %></span> → <b class="gold"><%= num(h.new_price) %></b></span>
+        </div><% }) %>
+        <% if(!history.length){ %><div class="small dim">تاریخچه‌ای موجود نیست.</div><% } %>
+      </div>
+    </aside>
+  </div>
+</div></div>

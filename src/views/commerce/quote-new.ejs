@@ -1,0 +1,33 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1><%= sample ? 'درخواست نمونه' : 'ارسال پیش‌فاکتور' %></h1>
+  <% if (rfq) { %><div class="alert info">در پاسخ به درخواست خرید: <b><%= rfq.title %></b> — <%= num(rfq.quantity) %> <%= rfq.unit||'' %></div><% } %>
+  <% if (listing) { %><div class="alert info">درباره کالا: <b><%= listing.title %></b></div><% } %>
+  <form method="post" action="/quotes/new" class="panel">
+    <input type="hidden" name="buyer_id" value="<%= buyerId %>"><input type="hidden" name="seller_id" value="<%= sellerId %>">
+    <% if (rfq) { %><input type="hidden" name="buy_request_id" value="<%= rfq.id %>"><% } %>
+    <% if (listing) { %><input type="hidden" name="listing_id" value="<%= listing.id %>"><% } %>
+    <% if (parent) { %><input type="hidden" name="parent_quote_id" value="<%= parent.id %>"><div class="alert warn">پیشنهاد متقابل برای نسخه v<%= parent.version %></div><% } %>
+    <div class="grid g3">
+      <div class="field"><label class="req">قیمت واحد</label><input type="number" step="any" name="price" required value="<%= listing?listing.price:'' %>"></div>
+      <div class="field"><label>ارز</label><select name="currency"><% currencies.forEach(function(c){ %><option value="<%= c.code %>"><%= c.code %></option><% }) %></select></div>
+      <div class="field"><label>واحد</label><input name="unit" value="<%= listing?(listing.price_unit||''):'' %>"></div>
+    </div>
+    <div class="grid g3">
+      <div class="field"><label>مقدار</label><input type="number" step="any" name="quantity" value="<%= rfq?rfq.quantity:'' %>"></div>
+      <div class="field"><label>MOQ</label><input type="number" step="any" name="moq"></div>
+      <div class="field"><label>زمان آماده‌سازی (روز)</label><input type="number" name="lead_time_days"></div>
+    </div>
+    <div class="grid g3">
+      <div class="field"><label>مالیات</label><input type="number" step="any" name="tax" value="0"></div>
+      <div class="field"><label>هزینه حمل</label><input type="number" step="any" name="shipping" value="0"></div>
+      <div class="field"><label>اینکوترمز</label><select name="incoterm"><option value="">—</option>
+        <% ['EXW','FCA','FOB','CFR','CIF','CPT','CIP','DAP','DPU','DDP'].forEach(function(i){ %><option><%= i %></option><% }) %></select></div>
+    </div>
+    <div class="grid g2">
+      <div class="field"><label>معتبر تا</label><input type="date" name="valid_until"></div>
+      <div class="field"><label>شرایط پرداخت</label><input name="payment_terms" placeholder="TT 30% advance, 70% BL copy"></div>
+    </div>
+    <div class="field"><label>یادداشت</label><textarea name="<%= isSeller?'seller_note':'buyer_note' %>"></textarea></div>
+    <button class="btn btn-primary btn-lg btn-block">ارسال پیش‌فاکتور</button>
+  </form>
+</div></div>

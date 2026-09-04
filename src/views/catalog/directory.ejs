@@ -1,0 +1,52 @@
+<div class="section-sm"><div class="wrap">
+  <nav class="breadcrumb"><a href="/"><%= t('nav_home') %></a> › <span class="gold"><%= title %></span></nav>
+  <div class="row-between"><h1><%= title %></h1><span class="muted"><%= num(total) %> نتیجه</span></div>
+  <div class="split">
+    <aside class="panel sticky">
+      <b style="display:block;margin-bottom:14px"><%= t('filters') %></b>
+      <form method="get">
+        <div class="field"><label><%= t('search') %></label><input name="q" value="<%= query.q||'' %>"></div>
+        <div class="field"><label>کشور</label><select name="country"><option value="">همه</option>
+          <% countries.forEach(function(c){ if(c.code){ %><option value="<%= c.code %>" <%= query.country===c.code?'selected':'' %>><%= c.code %></option><% }}) %></select></div>
+        <div class="field"><label>شهر</label><input name="city" value="<%= query.city||'' %>"></div>
+        <div class="field"><label>حوزه</label><select name="category_id"><option value="">همه</option>
+          <% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= String(query.category_id)===String(c.id)?'selected':'' %>><%= pick(c,'name') %></option><% }) %></select></div>
+        <% if (mode==='seller') { %>
+        <div class="field"><label>نوع کسب‌وکار</label><select name="seller_type"><option value="">همه</option>
+          <% [['manufacturer','تولیدکننده'],['distributor','توزیع‌کننده'],['wholesaler','عمده‌فروش'],['retailer','خرده‌فروش'],['exporter','صادرکننده'],['importer','واردکننده'],['service','خدمات']].forEach(function(x){ %>
+          <option value="<%= x[0] %>" <%= query.seller_type===x[0]?'selected':'' %>><%= x[1] %></option><% }) %></select></div>
+        <% } %>
+        <label class="check" style="margin-bottom:16px"><input type="checkbox" name="verified" value="1" <%= query.verified?'checked':'' %>><span>فقط احراز هویت شده</span></label>
+        <button class="btn btn-primary btn-block"><%= t('apply') %></button>
+      </form>
+    </aside>
+    <div>
+      <div class="grid g2">
+        <% rows.forEach(function(s){ %>
+        <div class="card card-pad card-hover anim">
+          <div class="row">
+            <a href="/u/<%= s.id %>" class="avatar av-56"><% if(s.avatar){ %><img src="<%= s.avatar %>"><% } else { %><%= (s.business_name||s.display_name||'?').charAt(0) %><% } %></a>
+            <div style="flex:1;min-width:0">
+              <div class="row" style="gap:6px"><a href="/u/<%= s.id %>"><b class="truncate"><%= s.business_name || s.display_name %></b></a>
+                <% if (s.kyc_ok) { %><span class="badge ok xs">✔</span><% } %></div>
+              <div class="xs dim">📍 <%= [s.city,s.country].filter(Boolean).join(', ') %> <%= s.seller_type ? '· '+s.seller_type : '' %></div>
+            </div>
+            <div class="center"><div class="bold mono"><%= num(mode==='seller'? s.listing_count : s.request_count) %></div>
+              <div class="xs dim"><%= mode==='seller'? t('nav_products') : 'RFQ' %></div></div>
+          </div>
+          <p class="small clamp2" style="margin:12px 0;min-height:2.8em"><%= s.about || '—' %></p>
+          <div class="row" style="border-top:1px solid var(--line);padding-top:11px">
+            <% if (s.rating) { %><span class="badge gold xs">★ <%= s.rating %> (<%= s.review_count %>)</span><% } %>
+            <span class="badge xs">Trust <%= s.trust_score %></span>
+            <span class="spacer"></span>
+            <a class="btn btn-soft btn-sm" href="/messages/start?user=<%= s.id %>">💬</a>
+            <button class="btn btn-soft btn-sm" data-bookmark="user:<%= s.id %>">☆</button>
+            <a class="btn btn-ghost btn-sm" href="/u/<%= s.id %>">مشاهده</a>
+          </div>
+        </div><% }) %>
+      </div>
+      <% if(!rows.length){ %><div class="empty-state"><div class="ic">🔍</div><%= t('empty') %></div><% } %>
+      <%- include('../partials/pagination', {page: page, pages: pages}) %>
+    </div>
+  </div>
+</div></div>

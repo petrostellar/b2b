@@ -1,0 +1,68 @@
+<div class="topbar">
+  <div class="wrap">
+    <span class="dim">📍 <%= siteName %> Global</span>
+    <a href="/help"><%= t('nav_help') %></a>
+    <a href="/about"><%= t('nav_about') %></a>
+    <a href="/contact"><%= t('nav_contact') %></a>
+    <span class="spacer"></span>
+    <form method="get" action="<%= path %>" style="display:flex;gap:8px;align-items:center">
+      <% Object.entries(query).forEach(function([k,v]){ if(!['lang','theme','currency'].includes(k)) { %>
+        <input type="hidden" name="<%= k %>" value="<%= v %>">
+      <% }}) %>
+      <select name="lang" onchange="this.form.submit()" style="min-height:26px;height:26px;padding:0 26px 0 8px;font-size:12px;border-radius:6px;background:transparent;border-color:transparent">
+        <% locales.forEach(function(l){ %><option value="<%= l.code %>" <%= l.code===locale?'selected':'' %>><%= l.flag %> <%= l.name %></option><% }) %>
+      </select>
+      <select name="currency" onchange="this.form.submit()" style="min-height:26px;height:26px;padding:0 26px 0 8px;font-size:12px;border-radius:6px;background:transparent;border-color:transparent">
+        <% currencies.forEach(function(c){ %><option value="<%= c.code %>" <%= c.code===currency?'selected':'' %>><%= c.symbol %> <%= c.code %></option><% }) %>
+      </select>
+      <select name="theme" onchange="this.form.submit()" style="min-height:26px;height:26px;padding:0 26px 0 8px;font-size:12px;border-radius:6px;background:transparent;border-color:transparent">
+        <% themes.forEach(function(th){ %><option value="<%= th.code %>" <%= th.code===theme?'selected':'' %>>◐ <%= th.name %></option><% }) %>
+      </select>
+    </form>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap bar">
+    <a href="/" class="brand"><span class="mark">M</span><%= siteName %></a>
+
+    <nav class="nav-main">
+      <div class="has-mega">
+        <a href="/products" class="<%= path.startsWith('/products')||path.startsWith('/category')?'on':'' %>"><%= t('nav_products') %> ▾</a>
+        <div class="mega">
+          <% megaMenu.slice(0,9).forEach(function(c){ %>
+          <div class="cat-col">
+            <h4><a href="/category/<%= c.slug %>"><%= c.icon %> <%= pick(c,'name') %></a></h4>
+            <% c.children.forEach(function(s){ %><a href="/category/<%= s.slug %>"><%= pick(s,'name') %></a><% }) %>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+      <a href="/suppliers" class="<%= path.startsWith('/suppliers')?'on':'' %>"><%= t('nav_suppliers') %></a>
+      <a href="/buy-requests" class="<%= path.startsWith('/buy-requests')?'on':'' %>"><%= t('nav_requests') %></a>
+      <a href="/stories" class="<%= path.startsWith('/stories')?'on':'' %>"><%= t('nav_stories') %></a>
+      <a href="/pricing" class="<%= path.startsWith('/pricing')?'on':'' %>"><%= t('nav_pricing') %></a>
+    </nav>
+
+    <span class="spacer"></span>
+
+    <form class="searchbox" method="get" action="/search">
+      <span class="ico">⌕</span>
+      <input type="text" name="q" value="<%= query.q||'' %>" placeholder="<%= t('search_placeholder') %>">
+    </form>
+
+    <% if (user) { %>
+      <a class="icon-btn" href="/messages" title="<%= t('nav_messages') %>">✉<% if(user.unread){ %><i class="badge-dot"><%= user.unread %></i><% } %></a>
+      <a class="icon-btn" href="/account/notifications" title="🔔">🔔<% if(user.notif_count){ %><i class="badge-dot"><%= user.notif_count %></i><% } %></a>
+      <a class="icon-btn" href="/cart" title="cart">🛒</a>
+      <% if (user.is_admin) { %><a class="btn btn-ghost btn-sm" href="/admin"><%= t('nav_admin') %></a><% } %>
+      <a class="btn btn-primary btn-sm" href="/sell/new">+ <%= t('nav_create') %></a>
+      <a href="/account" class="avatar av-40" title="<%= user.display_name %>">
+        <% if (user.avatar) { %><img src="<%= user.avatar %>" alt=""><% } else { %><%= (user.display_name||'U').charAt(0).toUpperCase() %><% } %>
+      </a>
+    <% } else { %>
+      <a class="btn btn-ghost btn-sm" href="/auth/login"><%= t('login') %></a>
+      <a class="btn btn-primary btn-sm" href="/auth/register"><%= t('register') %></a>
+    <% } %>
+  </div>
+</header>

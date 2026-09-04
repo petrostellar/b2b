@@ -1,0 +1,26 @@
+<h1>دسته‌بندی‌ها</h1>
+<div class="split-r">
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>#</th><th>نام</th><th>والد</th><th>slug</th><th>آگهی</th><th>وضعیت</th><th></th></tr></thead>
+    <tbody><% rows.forEach(function(c){ %><tr><td class="mono"><%= c.id %></td>
+      <td><%= c.icon||'' %> <b class="small"><%= c.name_fa %></b><div class="xs dim"><%= c.name_en %> / <%= c.name_tr %> / <%= c.name_ar %></div></td>
+      <td class="small dim"><%= c.parent_name||'—' %></td><td class="xs mono"><%= c.slug %></td>
+      <td class="mono"><%= num(c.lc) %></td><td><span class="badge <%= tone(c.status) %> xs"><%= c.status %></span></td>
+      <td><div class="row" style="gap:4px"><a class="btn btn-soft btn-sm" href="/admin/attributes?category_id=<%= c.id %>">🧩</a>
+        <form method="post" action="/admin/categories/<%= c.id %>/delete"><button class="btn btn-soft btn-sm">✕</button></form></div></td></tr><% }) %></tbody></table></div>
+  <form method="post" class="panel sticky">
+    <b style="display:block;margin-bottom:12px">افزودن دسته‌بندی</b>
+    <div class="field"><label>والد</label><select name="parent_id"><option value="">— ریشه —</option>
+      <% roots.forEach(function(c){ %><option value="<%= c.id %>"><%= c.name_fa %></option><% }) %></select></div>
+    <div class="field"><label class="req">نام فارسی</label><input name="name_fa" required></div>
+    <div class="field"><label class="req">English</label><input name="name_en" required></div>
+    <div class="field"><label>Türkçe</label><input name="name_tr"></div>
+    <div class="field"><label>العربية</label><input name="name_ar"></div>
+    <div class="field"><label>slug</label><input name="slug"></div>
+    <div class="field"><label>آیکون (اموجی)</label><input name="icon" placeholder="🌾"></div>
+    <div class="field"><label>ترتیب</label><input type="number" name="sort_order" value="0"></div>
+    <div class="field"><label>SEO Title</label><input name="seo_title"></div>
+    <div class="field"><label>SEO Description</label><textarea name="seo_description"></textarea></div>
+    <button class="btn btn-primary btn-block">افزودن</button>
+  </form>
+</div>

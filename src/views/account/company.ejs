@@ -1,0 +1,18 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>اطلاعات حقوقی شرکت</h1>
+  <form method="post" class="panel">
+    <div class="grid g2">
+      <div class="field"><label>نام رسمی شرکت</label><input name="business_name" value="<%= p.business_name||'' %>"></div>
+      <div class="field"><label>شماره ثبت</label><input name="registration_no" value="<%= p.registration_no||'' %>"></div>
+      <div class="field"><label>شناسه مالیاتی</label><input name="tax_no" value="<%= p.tax_no||'' %>"></div>
+      <div class="field"><label>آدرس قانونی</label><input name="address" value="<%= p.address||'' %>"></div>
+    </div>
+    <button class="btn btn-primary">ذخیره</button>
+  </form>
+  <div class="panel" style="margin-top:18px">
+    <div class="row-between"><b>احراز هویت شرکت (KYB)</b>
+      <% if(kyb){ %><span class="badge <%= tone(kyb.status) %>"><%= statusLabel(kyb.status) %></span><% } else { %><span class="badge warn">شروع نشده</span><% } %></div>
+    <p class="small" style="margin-top:10px">با تکمیل KYB، نشان «شرکت تأییدشده» روی غرفه و آگهی‌های شما نمایش داده می‌شود.</p>
+    <a class="btn btn-ghost btn-sm" href="/kyc?kind=kyb">شروع KYB</a>
+  </div>
+</div></div>

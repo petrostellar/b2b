@@ -1,0 +1,22 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>اعلان‌ها</h1>
+  <div class="split-r">
+    <div class="panel">
+      <% if (rows.length) { rows.forEach(function(n){ %>
+      <a href="<%= n.link||'#' %>" style="display:block;padding:12px 0;border-bottom:1px solid var(--line)">
+        <div class="row-between"><b class="small"><%= n.title %></b><span class="xs dim"><%= date(n.created_at) %></span></div>
+        <div class="small dim"><%= n.body %></div></a>
+      <% })} else { %><div class="empty-state"><div class="ic">🔔</div>اعلانی نیست.</div><% } %>
+    </div>
+    <form method="post" action="/account/notifications/prefs" class="panel">
+      <b style="display:block;margin-bottom:12px">تنظیمات اعلان</b>
+      <% [['in_app','درون‌برنامه'],['email','ایمیل'],['sms','پیامک'],['push','پوش']].forEach(function(x){ %>
+      <label class="check" style="margin-bottom:10px"><input type="checkbox" name="<%= x[0] %>" value="1" <%= prefs[x[0]]?'checked':'' %>><span><%= x[1] %></span></label><% }) %>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="field"><label>سکوت از</label><input type="time" name="quiet_from" value="<%= prefs.quiet_from||'' %>"></div>
+        <div class="field"><label>تا</label><input type="time" name="quiet_to" value="<%= prefs.quiet_to||'' %>"></div>
+      </div>
+      <button class="btn btn-primary btn-block btn-sm">ذخیره</button>
+    </form>
+  </div>
+</div></div>

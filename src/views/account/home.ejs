@@ -1,0 +1,65 @@
+<div class="section-sm"><div class="wrap">
+  <div class="row-between" style="margin-bottom:20px">
+    <div class="row"><span class="avatar av-88"><% if(user.avatar){ %><img src="<%= user.avatar %>"><% } else { %><%= (user.display_name||'U').charAt(0) %><% } %></span>
+      <div><h1 style="margin:0;font-size:24px"><%= user.display_name %></h1>
+        <div class="row" style="gap:6px;margin-top:6px">
+          <% if(user.verified){ %><span class="badge ok">✔ احراز شده</span><% } else { %><span class="badge warn">احراز نشده</span><% } %>
+          <span class="badge">Trust <%= trust %></span>
+          <% if(sub){ %><span class="badge gold">★ <%= pick(sub,'name') %></span><% } %>
+          <span class="badge muted">حالت: <%= user.active_mode==='seller'?'فروشنده':'خریدار' %></span>
+        </div></div></div>
+    <div class="row">
+      <form method="post" action="/auth/mode"><input type="hidden" name="mode" value="<%= user.active_mode==='seller'?'buyer':'seller' %>">
+        <button class="btn btn-ghost btn-sm">↔ تغییر حالت</button></form>
+      <a class="btn btn-ghost btn-sm" href="/u/<%= user.id %>">مشاهده پروفایل عمومی</a>
+      <a class="btn btn-primary btn-sm" href="/account/profile">✎ ویرایش</a>
+    </div>
+  </div>
+
+  <div class="grid g6" style="margin-bottom:24px">
+    <% [['/sell','📦','کالاهای من',counts.listings],['/my-requests','📋','درخواست‌ها',counts.requests],
+        ['/orders','🧾','سفارش‌ها',counts.orders],['/quotes','📄','پیش‌فاکتور',counts.quotes],
+        ['/crm','⭐','ذخیره‌شده',counts.bookmarks],['/wallet','💳','کیف پول','']].forEach(function(x){ %>
+      <a class="cat-tile" href="<%= x[0] %>"><div class="ic"><%= x[1] %></div><div class="nm"><%= x[2] %></div>
+        <% if(x[3]!==''){ %><div class="ct mono"><%= num(x[3]) %></div><% } %></a>
+    <% }) %>
+  </div>
+
+  <div class="split-r">
+    <div>
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">تکمیل پروفایل</h3><span class="gold bold"><%= completion.score %>%</span></div>
+        <div class="progress"><i style="width:<%= completion.score %>%"></i></div>
+        <div class="grid g2" style="margin-top:16px">
+          <% completion.steps.forEach(function(s){ %>
+          <a href="<%= s.link %>" class="row-between card card-pad" style="padding:12px 14px">
+            <span class="small"><%= s.done?'✅':'⬜' %> <%= s.label_fa %></span><span class="xs dim">+<%= s.weight %>%</span></a><% }) %>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-head"><h3 style="margin:0">دسترسی سریع</h3></div>
+        <div class="grid g3">
+          <% [['/account/profile','پروفایل و غرفه'],['/account/company','اطلاعات شرکت'],['/account/team','تیم'],
+              ['/kyc','احراز هویت KYC/KYB'],['/account/subscription','عضویت'],['/account/notifications','اعلان‌ها'],
+              ['/account/privacy','حریم خصوصی'],['/auth/sessions','امنیت و نشست‌ها'],['/support','پشتیبانی']].forEach(function(x){ %>
+            <a class="card card-pad card-hover small" href="<%= x[0] %>"><%= x[1] %> →</a><% }) %>
+        </div>
+      </div>
+    </div>
+    <aside class="sticky">
+      <div class="panel"><b style="display:block;margin-bottom:10px">وضعیت احراز هویت</b>
+        <% if (kyc) { %><span class="badge <%= tone(kyc.status) %>"><%= statusLabel(kyc.status) %></span>
+          <% if(kyc.decision_reason){ %><p class="small err-text"><%= kyc.decision_reason %></p><% } %>
+        <% } else { %><span class="badge warn">شروع نشده</span><% } %>
+        <a class="btn btn-primary btn-block btn-sm" style="margin-top:12px" href="/kyc">مرکز احراز هویت</a>
+      </div>
+      <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:10px">اعلان‌ها</b>
+        <% notifs.forEach(function(n){ %><a href="<%= n.link||'#' %>" style="display:block;padding:8px 0;border-top:1px solid var(--line)">
+          <div class="small bold"><%= n.title %></div><div class="xs dim clamp2"><%= n.body %></div></a><% }) %>
+        <% if(!notifs.length){ %><div class="small dim">اعلانی نیست.</div><% } %>
+      </div>
+      <form method="post" action="/auth/logout" style="margin-top:18px"><button class="btn btn-danger btn-block">خروج از حساب</button></form>
+    </aside>
+  </div>
+</div></div>

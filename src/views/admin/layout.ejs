@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="<%= locale %>" dir="<%= dir %>">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> — <%= siteName %> Admin</title>
+<link rel="stylesheet" href="/css/app.css">
+<style>:root{<%- themeVars %>}</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-side">
+    <a href="/" class="brand" style="padding:0 20px 14px;font-size:18px"><span class="mark">M</span>Admin</a>
+    <div class="grp">Overview</div>
+    <a href="/admin" class="<%= section==='dashboard'?'on':'' %>">📊 داشبورد</a>
+    <a href="/admin/health" class="<%= section==='health'?'on':'' %>">💚 سلامت سیستم</a>
+    <a href="/admin/audit" class="<%= section==='audit'?'on':'' %>">🧾 ممیزی و رویدادها</a>
+    <div class="grp">People</div>
+    <a href="/admin/users" class="<%= section==='users'?'on':'' %>">👥 کاربران و نقش‌ها</a>
+    <a href="/admin/kyc" class="<%= section==='kyc'?'on':'' %>">🪪 KYC / KYB</a>
+    <div class="grp">Marketplace</div>
+    <a href="/admin/listings" class="<%= section==='listings'?'on':'' %>">📦 آگهی‌ها</a>
+    <a href="/admin/requests" class="<%= section==='requests'?'on':'' %>">📋 درخواست‌های خرید</a>
+    <a href="/admin/categories" class="<%= section==='categories'?'on':'' %>">🗂 دسته‌بندی‌ها</a>
+    <a href="/admin/attributes" class="<%= section==='attributes'?'on':'' %>">🧩 مشخصه‌ها</a>
+    <a href="/admin/orders" class="<%= section==='orders'?'on':'' %>">🧾 سفارش و پرداخت</a>
+    <div class="grp">Growth</div>
+    <a href="/admin/plans" class="<%= section==='plans'?'on':'' %>">★ پلن‌های عضویت</a>
+    <a href="/admin/ads" class="<%= section==='ads'?'on':'' %>">📣 تبلیغات</a>
+    <div class="grp">Trust</div>
+    <a href="/admin/moderation" class="<%= section==='moderation'?'on':'' %>">🛡 نظارت و اختلاف</a>
+    <a href="/admin/support" class="<%= section==='support'?'on':'' %>">🎧 پشتیبانی</a>
+    <div class="grp">Platform</div>
+    <a href="/admin/cms" class="<%= section==='cms'?'on':'' %>">📝 محتوا و SEO</a>
+    <a href="/admin/localization" class="<%= section==='localization'?'on':'' %>">🌍 زبان و ارز</a>
+    <a href="/admin/plugins" class="<%= section==='plugins'?'on':'' %>">🔌 افزونه‌ها</a>
+    <a href="/admin/settings" class="<%= section==='settings'?'on':'' %>">⚙ تنظیمات و پوسته</a>
+    <div class="grp">&nbsp;</div>
+    <a href="/">↩ بازگشت به سایت</a>
+    <a href="/auth/logout">⎋ خروج</a>
+  </aside>
+  <main class="admin-main">
+    <% if (flash) { %><div class="alert <%= flash.type %>"><%= flash.msg %></div><% } %>
+    <%- body %>
+  </main>
+</div>
+<script src="/js/app.js"></script>
+</body></html>

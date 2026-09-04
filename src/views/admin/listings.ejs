@@ -1,0 +1,16 @@
+<h1>مدیریت آگهی‌ها</h1>
+<div class="tabs"><% ['pending_review','approved','rejected','need_correction','draft','suspended'].forEach(function(s){ %>
+  <a href="/admin/listings?status=<%= s %>" class="<%= st===s?'on':'' %>"><%= statusLabel(s) %><span class="count">(<%= num(counts[s]) %>)</span></a><% }) %></div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>آگهی</th><th>فروشنده</th><th>دسته</th><th>قیمت</th><th>موجودی</th><th>عملیات</th></tr></thead>
+  <tbody><% rows.forEach(function(l){ %><tr>
+    <td><a href="/product/<%= l.slug||l.id %>" class="row"><span class="avatar av-40" style="border-radius:8px"><% if(l.cover){ %><img src="<%= l.cover %>"><% } else { %>📦<% } %></span>
+      <div><b class="small"><%= l.title %></b><div class="xs dim"><%= date(l.created_at) %></div></div></a></td>
+    <td class="small"><%= l.seller %></td><td class="small"><%= l.cat||'—' %></td>
+    <td class="mono"><%= money(l.price,l.currency) %></td><td class="mono"><%= num(l.inventory) %></td>
+    <td><form method="post" action="/admin/listings/<%= l.id %>/moderate" class="row" style="gap:4px">
+      <input name="reason" placeholder="دلیل" style="min-height:31px;height:31px;font-size:12px;max-width:150px">
+      <button name="decision" value="approved" class="btn btn-ok btn-sm">✓</button>
+      <button name="decision" value="need_correction" class="btn btn-soft btn-sm">✎</button>
+      <button name="decision" value="rejected" class="btn btn-danger btn-sm">✕</button></form></td></tr><% }) %></tbody></table></div>
+<%- include('../partials/pagination', {page: page, pages: pages}) %>

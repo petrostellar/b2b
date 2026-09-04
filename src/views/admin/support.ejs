@@ -1,0 +1,11 @@
+<h1>تیکت‌های پشتیبانی</h1>
+<div class="table-wrap" style="margin-top:16px"><table class="data">
+  <thead><tr><th>#</th><th>موضوع</th><th>کاربر</th><th>دسته</th><th>اولویت</th><th>وضعیت</th><th></th></tr></thead>
+  <tbody><% rows.forEach(function(t){ %><tr><td class="mono"><%= t.id %></td>
+    <td class="small"><a href="/support/<%= t.id %>"><%= t.subject %></a></td><td class="small"><%= t.display_name %></td>
+    <td class="small dim"><%= t.category %></td><td><span class="badge xs"><%= t.priority %></span></td>
+    <td><span class="badge <%= tone(t.status) %> xs"><%= t.status %></span></td>
+    <td><form method="post" action="/admin/support/<%= t.id %>" class="row" style="gap:4px">
+      <select name="status" style="min-height:30px;height:30px;font-size:12px;width:auto;padding:0 22px 0 6px">
+        <% ['open','pending','answered','closed'].forEach(function(s){ %><option><%= s %></option><% }) %></select>
+      <button class="btn btn-soft btn-sm">✓</button></form></td></tr><% }) %></tbody></table></div>

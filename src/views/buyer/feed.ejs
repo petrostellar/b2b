@@ -1,0 +1,57 @@
+<div class="section-sm"><div class="wrap">
+  <nav class="breadcrumb"><a href="/"><%= t('nav_home') %></a> › <span class="gold"><%= t('nav_requests') %></span></nav>
+  <div class="row-between"><div><span class="eyebrow">BUYER DEMAND</span><h1 style="margin:0">درخواست‌های خرید</h1></div>
+    <a class="btn btn-primary" href="/buy-requests/new">+ ثبت درخواست خرید</a></div>
+  <p class="muted"><%= num(total) %> درخواست فعال — به عنوان فروشنده می‌توانید پیشنهاد قیمت ارسال کنید.</p>
+
+  <div class="split">
+    <aside class="panel sticky">
+      <b style="display:block;margin-bottom:14px"><%= t('filters') %></b>
+      <form method="get">
+        <div class="field"><label><%= t('search') %></label><input name="q" value="<%= query.q||'' %>"></div>
+        <div class="field"><label>دسته‌بندی</label><select name="category_id"><option value="">همه</option>
+          <% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= String(query.category_id)===String(c.id)?'selected':'' %>><%= pick(c,'name') %></option><% }) %></select></div>
+        <div class="field"><label>مقصد</label><input name="destination" value="<%= query.destination||'' %>"></div>
+        <div class="field"><label>حداقل مقدار</label><input type="number" name="min_qty" value="<%= query.min_qty||'' %>"></div>
+        <div class="field"><label>بازه زمانی</label><select name="days"><option value="">همه</option>
+          <% [[7,'۷ روز'],[30,'۳۰ روز'],[90,'۹۰ روز']].forEach(function(x){ %><option value="<%= x[0] %>" <%= String(query.days)===String(x[0])?'selected':'' %>><%= x[1] %></option><% }) %></select></div>
+        <label class="check" style="margin-bottom:16px"><input type="checkbox" name="verified" value="1" <%= query.verified?'checked':'' %>><span>خریداران احراز شده</span></label>
+        <button class="btn btn-primary btn-block"><%= t('apply') %></button>
+      </form>
+      <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
+        <b class="small" style="display:block;margin-bottom:10px">خریداران پیشنهادی</b>
+        <% suggested.forEach(function(s){ %>
+        <a href="/u/<%= s.id %>" class="row" style="padding:7px 0"><span class="avatar av-32"><%= (s.business_name||s.display_name||'B').charAt(0) %></span>
+          <div style="min-width:0"><div class="small truncate"><%= s.business_name||s.display_name %></div>
+          <div class="xs dim"><%= num(s.rc) %> درخواست · <%= s.city||'' %></div></div></a><% }) %>
+      </div>
+    </aside>
+    <div>
+      <div class="grid g2">
+        <% rows.forEach(function(b){ %>
+        <div class="card card-pad card-hover anim">
+          <div class="row-between"><span class="badge info xs"><%= pick(b,'cat_name')||'RFQ' %></span>
+            <span class="xs dim"><%= date(b.created_at) %></span></div>
+          <a href="/buy-requests/<%= b.id %>"><h3 style="margin:12px 0 8px;font-size:17px" class="clamp2"><%= b.title %></h3></a>
+          <p class="small clamp2" style="min-height:2.8em"><%= b.description %></p>
+          <dl class="kv small" style="margin:12px 0">
+            <dt>مقدار</dt><dd><%= num(b.quantity) %> <%= b.unit||'' %></dd>
+            <% if(b.target_price){ %><dt>قیمت هدف</dt><dd class="gold"><%= money(b.target_price,b.currency) %></dd><% } %>
+            <% if(b.destination){ %><dt>مقصد</dt><dd><%= b.destination %></dd><% } %>
+            <% if(b.deadline){ %><dt>مهلت</dt><dd><%= date(b.deadline) %></dd><% } %>
+          </dl>
+          <div class="row" style="border-top:1px solid var(--line);padding-top:11px">
+            <a href="/u/<%= b.buyer_id %>" class="row" style="gap:6px"><span class="avatar av-24"><%= (b.buyer_name||'B').charAt(0) %></span>
+              <span class="xs"><%= b.business_name||b.buyer_name %></span></a>
+            <% if(b.kyc_ok){ %><span class="badge ok xs">✔</span><% } %>
+            <span class="spacer"></span>
+            <span class="xs dim"><%= num(b.quote_count) %> پیشنهاد</span>
+            <a class="btn btn-primary btn-sm" href="/buy-requests/<%= b.id %>">ارسال پیشنهاد</a>
+          </div>
+        </div><% }) %>
+      </div>
+      <% if(!rows.length){ %><div class="empty-state"><div class="ic">📋</div><%= t('empty') %></div><% } %>
+      <%- include('../partials/pagination', {page: page, pages: pages}) %>
+    </div>
+  </div>
+</div></div>

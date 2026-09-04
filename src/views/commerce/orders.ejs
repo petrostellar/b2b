@@ -1,0 +1,17 @@
+<div class="section-sm"><div class="wrap">
+  <div class="row-between"><h1>سفارش‌ها</h1>
+    <div class="row"><a class="chip <%= role==='buyer'?'on':'' %>" href="/orders?role=buyer">خریدهای من</a>
+      <a class="chip <%= role==='seller'?'on':'' %>" href="/orders?role=seller">فروش‌های من</a></div></div>
+  <% if (rows.length) { %>
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>شماره</th><th>طرف مقابل</th><th>مبلغ</th><th>پرداخت</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
+    <tbody><% rows.forEach(function(o){ %>
+      <tr><td class="mono"><%= o.order_no %></td><td class="small"><%= role==='buyer'?o.seller_name:o.buyer_name %></td>
+      <td class="mono gold"><%= money(o.total,o.currency) %></td>
+      <td><span class="badge <%= o.payment_status==='paid'?'ok':'warn' %>"><%= statusLabel(o.payment_status) %></span></td>
+      <td><span class="badge <%= tone(o.status) %>"><%= statusLabel(o.status) %></span></td>
+      <td class="small dim"><%= date(o.created_at) %></td>
+      <td><a class="btn btn-soft btn-sm" href="/orders/<%= o.id %>">مشاهده</a></td></tr>
+    <% }) %></tbody></table></div>
+  <% } else { %><div class="empty-state"><div class="ic">📦</div>سفارشی وجود ندارد.</div><% } %>
+</div></div>

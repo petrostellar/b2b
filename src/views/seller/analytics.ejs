@@ -1,0 +1,72 @@
+<div class="section-sm"><div class="wrap">
+  <nav class="breadcrumb"><a href="/sell">کالاهای من</a> › <a href="/product/<%= l.slug||l.id %>"><%= l.title %></a> › <span class="gold">گزارش محصول</span></nav>
+  <div class="row-between"><h1>گزارش محصول</h1><a class="btn btn-ghost btn-sm" href="/product/<%= l.slug||l.id %>">مشاهده آگهی →</a></div>
+
+  <div class="grid g4" style="margin:20px 0">
+    <div class="stat-card"><div class="v mono"><%= num(today) %></div><div class="k">بازدید امروز</div></div>
+    <div class="stat-card"><div class="v mono"><%= num(week) %></div><div class="k">بازدید ۷ روز اخیر</div></div>
+    <div class="stat-card"><div class="v mono"><%= num(total) %></div><div class="k">کل بازدید</div></div>
+    <div class="stat-card"><div class="v mono"><%= num(unique) %></div><div class="k">بازدیدکننده یکتا</div></div>
+  </div>
+  <div class="grid g4" style="margin-bottom:20px">
+    <div class="stat-card"><div class="v mono"><%= num(saves) %></div><div class="k">ذخیره شده</div></div>
+    <div class="stat-card"><div class="v mono"><%= num(interested.length) %></div><div class="k">کاربران علاقه‌مند (پیام‌داده)</div></div>
+    <div class="stat-card"><div class="v mono"><%= num(quotes) %></div><div class="k">درخواست پیش‌فاکتور</div></div>
+    <div class="stat-card"><div class="v mono"><%= num(orders) %></div><div class="k">سفارش</div></div>
+  </div>
+
+  <div class="split-r">
+    <div>
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">نمودار بازدید روزانه (۱۴ روز)</h3></div>
+        <% var mx = Math.max(1, ...chart.map(function(c){return c.c})); %>
+        <div class="bars">
+          <% if(chart.length){ chart.forEach(function(c){ %><div style="height:<%= Math.round(c.c/mx*100) %>%" title="<%= c.day %>: <%= c.c %>"><span><%= c.day.slice(5) %></span></div><% })} else { %><div class="dim small">داده کافی نیست.</div><% } %>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-head"><h3 style="margin:0">کاربران علاقه‌مند</h3><span class="badge info"><%= num(interested.length) %></span></div>
+        <% if (interested.length) { interested.forEach(function(u){ %>
+        <div class="row-between" style="padding:10px 0;border-bottom:1px solid var(--line)">
+          <a href="/u/<%= u.id %>" class="row"><span class="avatar av-32"><%= (u.display_name||'U').charAt(0) %></span>
+            <div><b class="small"><%= u.business_name||u.display_name %></b><div class="xs dim"><%= u.city||'' %></div></div></a>
+          <a class="btn btn-soft btn-sm" href="/messages/start?user=<%= u.id %>&listing=<%= l.id %>">💬 پیام</a>
+        </div><% })} else { %><div class="small dim">هنوز کسی درباره این کالا پیام نداده است.</div><% } %>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-head"><h3 style="margin:0">بازدیدکنندگان</h3>
+          <% if(!canSeeViewers){ %><a href="/pricing" class="badge gold">نیاز به عضویت ویژه</a><% } %></div>
+        <% if (canSeeViewers) { %>
+          <% if (viewers.length) { viewers.forEach(function(u){ %>
+          <div class="row-between" style="padding:9px 0;border-bottom:1px solid var(--line)">
+            <a href="/u/<%= u.id %>" class="row"><span class="avatar av-32"><%= (u.display_name||'U').charAt(0) %></span>
+              <div><b class="small"><%= u.business_name||u.display_name %></b><div class="xs dim">📍 <%= [u.city,u.country].filter(Boolean).join(', ') %> · <%= date(u.last_seen) %></div></div></a>
+            <a class="btn btn-soft btn-sm" href="/messages/start?user=<%= u.id %>&listing=<%= l.id %>">💬</a>
+          </div><% })} else { %><div class="small dim">بازدیدکننده ثبت‌نام‌شده‌ای نداشته‌اید.</div><% } %>
+        <% } else { %>
+          <div class="empty-state"><div class="ic">🔒</div>مشاهده فهرست بازدیدکنندگان نیازمند عضویت ویژه است.
+            <div><a class="btn btn-primary" style="margin-top:14px" href="/pricing">ارتقا عضویت</a></div></div>
+        <% } %>
+      </div>
+    </div>
+
+    <aside class="sticky">
+      <div class="panel">
+        <b style="display:block;margin-bottom:12px">🚀 روش‌های افزایش بازدید</b>
+        <% recos.forEach(function(rc){ %>
+        <a href="<%= rc.link %>" class="row" style="padding:11px 0;border-top:1px solid var(--line);align-items:flex-start">
+          <span style="font-size:19px"><%= rc.ic %></span>
+          <div><b class="small"><%= rc.t %></b><div class="xs dim"><%= rc.d %></div></div></a>
+        <% }) %>
+        <% if(!recos.length){ %><div class="small ok">همه بهینه‌سازی‌ها انجام شده ✓</div><% } %>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:12px">منابع ترافیک</b>
+        <% sources.forEach(function(s){ %>
+        <div class="row-between small" style="padding:6px 0;border-top:1px solid var(--line)"><span><%= s.source||'direct' %></span><b class="mono"><%= num(s.c) %></b></div><% }) %>
+      </div>
+    </aside>
+  </div>
+</div></div>

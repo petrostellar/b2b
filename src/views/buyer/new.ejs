@@ -1,0 +1,45 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <span class="eyebrow">RFQ</span><h1>ثبت درخواست خرید</h1>
+  <p>درخواست خود را ثبت کنید تا تأمین‌کنندگان مرتبط پیشنهاد قیمت ارسال کنند.</p>
+  <form method="post" enctype="multipart/form-data" class="panel" data-autosave="rfq">
+    <fieldset><legend>کالای مورد نیاز</legend>
+      <div class="field"><label class="req">عنوان درخواست</label><input name="title" required placeholder="مثال: خرید ۲۰ تن پسته اکبری صادراتی"></div>
+      <div class="field"><label class="req">دسته‌بندی</label><select name="category_id" required><option value="">— انتخاب —</option>
+        <% cats.forEach(function(c){ %><option value="<%= c.id %>"><%= c.parent_name ? c.parent_name+' › ':'' %><%= pick(c,'name') %></option><% }) %></select></div>
+      <div class="field"><label>نوع / واریته</label><input name="variety"></div>
+      <div class="grid g2">
+        <div class="field"><label class="req">مقدار مورد نیاز</label><input type="number" step="any" name="quantity" required></div>
+        <div class="field"><label>واحد</label><select name="unit"><option value="">—</option>
+          <% units.forEach(function(u){ %><option value="<%= u.code %>"><%= pick(u,'name') %></option><% }) %></select></div>
+      </div>
+      <label class="check"><input type="checkbox" name="wholesale_experience" value="1"><span>سابقه خرید عمده دارم</span></label>
+    </fieldset>
+
+    <fieldset><legend>شرایط تجاری</legend>
+      <div class="grid g2">
+        <div class="field"><label>قیمت هدف</label><input type="number" step="any" name="target_price"></div>
+        <div class="field"><label>ارز</label><select name="currency">
+          <% currencies.forEach(function(c){ %><option value="<%= c.code %>"><%= c.code %></option><% }) %></select></div>
+      </div>
+      <div class="grid g2">
+        <div class="field"><label>مبدأ ترجیحی</label><select name="origin_preference"><option value="">فرقی ندارد</option>
+          <% countries.forEach(function(c){ %><option value="<%= c.code %>"><%= pick(c,'name') %></option><% }) %></select></div>
+        <div class="field"><label>مقصد تحویل</label><input name="destination" placeholder="Istanbul, Turkey"></div>
+      </div>
+      <div class="field"><label>مهلت تحویل</label><input type="date" name="deadline"></div>
+    </fieldset>
+
+    <fieldset><legend>الزامات کیفی</legend>
+      <div class="field"><label>الزامات بسته‌بندی</label><input name="packaging_requirement"></div>
+      <div class="field"><label>الزامات کیفیت</label><input name="quality_requirement"></div>
+      <div class="field"><label>گواهی‌های مورد نیاز</label><input name="certificate_requirement" placeholder="ISO 22000, HACCP, Halal…"></div>
+    </fieldset>
+
+    <div class="field"><label class="req">به دنبال چه چیزی هستید؟ (توضیحات)</label>
+      <textarea name="description" required style="min-height:150px"></textarea></div>
+    <div class="field"><label>پیوست (RFQ، مشخصات فنی…)</label><input type="file" name="attachment"></div>
+    <div class="field"><label>روش تماس ترجیحی</label><select name="contact_preference">
+      <option value="chat">گفتگو در پلتفرم</option><option value="phone">تماس تلفنی</option><option value="email">ایمیل</option></select></div>
+    <button class="btn btn-primary btn-lg btn-block">ثبت درخواست خرید</button>
+  </form>
+</div></div>

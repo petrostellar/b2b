@@ -1,0 +1,23 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/sell">کالاهای من</a> › <span class="gold">نردبان و ارتقا</span></nav>
+  <span class="eyebrow">PROMOTION</span><h1>نردبان و ارتقای آگهی</h1>
+  <p>آگهی «<b><%= l.title %></b>» را در جایگاه بالاتری نمایش دهید. نتایج ارتقا با برچسب Sponsored مشخص می‌شوند.</p>
+  <div class="grid g2">
+    <% options.forEach(function(o){ %>
+    <form method="post" class="card card-pad card-hover">
+      <input type="hidden" name="kind" value="<%= o.kind %>"><input type="hidden" name="days" value="<%= o.days %>">
+      <input type="hidden" name="price" value="<%= o.price %>">
+      <div class="row-between"><b><%= o.name %></b><span class="badge gold"><%= num(o.days) %> روز</span></div>
+      <p class="small" style="margin:10px 0"><%= o.desc %></p>
+      <div class="row-between"><span class="big bold gold"><%= money(o.price) %></span>
+        <button class="btn btn-primary btn-sm">فعال‌سازی</button></div>
+    </form><% }) %>
+  </div>
+  <% if (history.length) { %>
+  <div class="panel" style="margin-top:22px"><b style="display:block;margin-bottom:12px">تاریخچه ارتقا</b>
+    <div class="table-wrap"><table class="data"><thead><tr><th>نوع</th><th>مدت</th><th>مبلغ</th><th>پایان</th><th>وضعیت</th></tr></thead>
+    <tbody><% history.forEach(function(h){ %><tr><td><%= h.kind %></td><td><%= num(h.duration_days) %> روز</td>
+      <td class="mono"><%= money(h.price_minor/100, h.currency) %></td><td class="small"><%= date(h.ends_at) %></td>
+      <td><span class="badge <%= tone(h.status) %>"><%= h.status %></span></td></tr><% }) %></tbody></table></div>
+  </div><% } %>
+</div></div>

@@ -1,0 +1,6 @@
+<div class="section"><div class="wrap narrow">
+  <span class="eyebrow"><%= p.slug.toUpperCase() %></span>
+  <h1><%= pick(p,'title') %></h1>
+  <div class="panel prose"><%- pick(p,'body') %></div>
+  <div class="xs dim" style="margin-top:14px">آخرین بروزرسانی: <%= date(p.updated_at || p.created_at) %></div>
+</div></div>

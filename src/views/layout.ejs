@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="<%= locale %>" dir="<%= dir %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title><%= (typeof title !== 'undefined' && title) ? title + ' — ' + siteName : siteName + ' — ' + t('brand_tagline') %></title>
+<meta name="description" content="<%= typeof metaDesc !== 'undefined' ? metaDesc : t('footer_about') %>">
+<meta property="og:title" content="<%= (typeof title !== 'undefined' && title) ? title : siteName %>">
+<meta property="og:description" content="<%= typeof metaDesc !== 'undefined' ? metaDesc : t('footer_about') %>">
+<meta property="og:type" content="website">
+<link rel="canonical" href="<%= path %>">
+<% locales.forEach(function(l){ %><link rel="alternate" hreflang="<%= l.code %>" href="<%= path %>?lang=<%= l.code %>"><% }) %>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23c8a15a'/><text x='16' y='23' font-size='18' font-weight='bold' text-anchor='middle' fill='%23141008'>M</text></svg>">
+<link rel="stylesheet" href="/css/app.css">
+<style>:root{<%- themeVars %>}</style>
+</head>
+<body>
+<%- include('partials/header') %>
+
+<% if (flash) { %>
+<div class="wrap" style="padding-top:16px"><div class="alert <%= flash.type %>"><%= flash.msg %></div></div>
+<% } %>
+
+<main><%- body %></main>
+
+<%- include('partials/footer') %>
+<%- include('partials/mobilenav') %>
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<div class="section"><div class="wrap" style="max-width:620px">
+  <div class="panel center">
+    <div style="font-size:56px">✅</div>
+    <h1>کالای شما ثبت شد</h1>
+    <p>وضعیت فعلی: <span class="badge <%= tone(l.status) %>"><%= statusLabel(l.status) %></span></p>
+    <p class="small">پس از تأیید تیم بررسی، آگهی شما در نتایج جستجو و صفحه دسته‌بندی نمایش داده می‌شود.</p>
+    <div class="col" style="margin-top:20px">
+      <a class="btn btn-primary btn-block" href="/product/<%= l.slug||l.id %>">مشاهده آگهی</a>
+      <a class="btn btn-ghost btn-block" href="/sell/<%= l.id %>/wizard/1">ویرایش</a>
+      <a class="btn btn-ghost btn-block" href="/sell/<%= l.id %>/boost">🚀 ارتقا با نردبان</a>
+      <a class="btn btn-soft btn-block" href="/sell/new">+ ثبت کالای بعدی</a>
+    </div>
+  </div>
+</div></div>

@@ -1,0 +1,7 @@
+<div class="section"><div class="wrap narrow">
+  <a class="xs gold" href="/blog">← <%= t('nav_blog') %></a>
+  <h1 style="margin-top:8px"><%= p.title %></h1>
+  <div class="xs dim" style="margin-bottom:14px"><%= date(p.created_at) %> · مقاله</div>
+  <% if (p.cover) { %><img src="<%= p.cover %>" alt="" style="width:100%;border-radius:16px;margin-bottom:16px"><% } %>
+  <div class="panel prose"><%- p.body %></div>
+</div></div>

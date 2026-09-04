@@ -1,0 +1,21 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>اعضای تیم</h1>
+  <div class="split-r">
+    <div class="panel">
+      <% if (rows.length) { rows.forEach(function(m){ %>
+      <div class="row-between" style="padding:12px 0;border-bottom:1px solid var(--line)">
+        <div class="row"><span class="avatar av-40"><%= (m.name||'?').charAt(0) %></span>
+          <div><b class="small"><%= m.name %></b><div class="xs dim"><%= m.role %> · <%= m.email||m.phone||'' %></div></div></div>
+        <form method="post" action="/account/team/<%= m.id %>/delete"><button class="btn btn-soft btn-sm">✕</button></form>
+      </div><% })} else { %><div class="empty-state"><div class="ic">👥</div>عضوی اضافه نشده.</div><% } %>
+    </div>
+    <form method="post" class="panel">
+      <b style="display:block;margin-bottom:12px">افزودن همکار</b>
+      <div class="field"><label class="req">نام</label><input name="name" required></div>
+      <div class="field"><label>سمت</label><input name="role" placeholder="مدیر فروش"></div>
+      <div class="field"><label>ایمیل</label><input type="email" name="email"></div>
+      <div class="field"><label>تلفن</label><input name="phone"></div>
+      <button class="btn btn-primary btn-block">افزودن</button>
+    </form>
+  </div>
+</div></div>

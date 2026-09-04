@@ -1,0 +1,14 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/support">پشتیبانی</a> › <span class="gold"><%= ticket.subject %></span></nav>
+  <div class="panel">
+    <div class="row-between"><h1 style="margin:0;font-size:22px"><%= ticket.subject %></h1><span class="badge <%= tone(ticket.status) %>"><%= statusLabel(ticket.status) %></span></div>
+    <div style="margin-top:18px">
+      <% msgs.forEach(function(m){ %>
+      <div class="glass" style="padding:12px;margin-bottom:10px<%= m.internal?';border-color:var(--warn)':'' %>">
+        <div class="row-between"><b class="small"><%= m.display_name||'پشتیبانی' %><%= m.internal?' (داخلی)':'' %></b><span class="xs dim"><%= date(m.created_at) %></span></div>
+        <p class="small" style="margin:6px 0 0"><%= m.body %></p></div><% }) %>
+    </div>
+    <form method="post" style="margin-top:16px"><div class="field"><textarea name="body" required placeholder="پاسخ شما…"></textarea></div>
+      <button class="btn btn-primary">ارسال پاسخ</button></form>
+  </div>
+</div></div>

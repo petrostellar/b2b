@@ -1,0 +1,39 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/crm">CRM</a> › <span class="gold"><%= u.display_name %></span></nav>
+  <div class="split-r">
+    <div>
+      <div class="panel">
+        <div class="row"><span class="avatar av-88"><% if(u.avatar){ %><img src="<%= u.avatar %>"><% } else { %><%= (u.display_name||'?').charAt(0) %><% } %></span>
+          <div><h1 style="margin:0;font-size:22px"><%= u.profile.business_name||u.display_name %></h1>
+            <div class="small dim">📍 <%= [u.profile.city,u.profile.country].filter(Boolean).join(', ') %> · Trust <%= u.trust_score %></div>
+            <div class="row" style="margin-top:10px">
+              <a class="btn btn-primary btn-sm" href="/messages/start?user=<%= u.id %>">💬 گفتگو</a>
+              <% if (canPhone && u.phone) { %><a class="btn btn-ok btn-sm" href="tel:<%= u.phone %>">📞 <%= u.phone %></a>
+              <% } else { %><a class="btn btn-soft btn-sm" href="/pricing">🔒 شماره</a><% } %>
+              <a class="btn btn-ghost btn-sm" href="/u/<%= u.id %>">پروفایل عمومی</a>
+            </div></div></div>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:12px">یادداشت‌ها</b>
+        <form method="post" action="/crm/note"><input type="hidden" name="target_user_id" value="<%= u.id %>">
+          <div class="field"><textarea name="body" required placeholder="یادداشت پیگیری…" style="min-height:80px"></textarea></div>
+          <button class="btn btn-primary btn-sm">ثبت یادداشت</button></form>
+        <div style="margin-top:16px">
+        <% notes.forEach(function(n){ %><div class="glass" style="padding:11px;margin-bottom:8px">
+          <div class="small"><%= n.body %></div><div class="xs dim" style="margin-top:5px"><%= date(n.created_at) %></div></div><% }) %>
+        <% if(!notes.length){ %><div class="small dim">یادداشتی ثبت نشده.</div><% } %>
+        </div>
+      </div>
+    </div>
+    <aside class="sticky"><div class="panel">
+      <b style="display:block;margin-bottom:12px">لیست‌های این کاربر</b>
+      <% lists.forEach(function(L){ %>
+      <div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+        <span><%= L.name %></span>
+        <% if (L.member_id) { %><span class="badge ok xs">عضو</span>
+        <% } else { %><form method="post" action="/crm/add"><input type="hidden" name="target_user_id" value="<%= u.id %>">
+          <input type="hidden" name="list_id" value="<%= L.id %>"><button class="btn btn-soft btn-sm">+</button></form><% } %>
+      </div><% }) %>
+    </div></aside>
+  </div>
+</div></div>

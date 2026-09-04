@@ -1,0 +1,138 @@
+<div style="height:200px;background:var(--hero);border-bottom:1px solid var(--line);position:relative">
+  <% if (u.profile.cover) { %><img src="<%= u.profile.cover %>" style="width:100%;height:100%;object-fit:cover"><% } %>
+</div>
+<div class="wrap" style="margin-top:-56px;position:relative;z-index:2">
+  <div class="panel">
+    <div class="row" style="gap:20px;align-items:flex-start">
+      <span class="avatar av-120" style="border-width:4px"><% if(u.avatar){ %><img src="<%= u.avatar %>"><% } else { %><%= (u.profile.business_name||u.display_name||'S').charAt(0) %><% } %></span>
+      <div style="flex:1;min-width:0">
+        <div class="row" style="gap:8px">
+          <h1 style="margin:0;font-size:26px"><%= u.profile.business_name || u.display_name %></h1>
+          <% if (verified) { %><span class="badge ok">✔ <%= t('verified') %></span><% } %>
+          <% if (u.subscription) { %><span class="badge gold">★ Premium</span><% } %>
+          <span class="badge">Trust <%= trust %></span>
+        </div>
+        <div class="row small dim" style="margin-top:6px">
+          <span>📍 <%= [u.profile.city,u.profile.province,u.profile.country].filter(Boolean).join('، ') %></span>
+          <% if (u.profile.seller_type) { %><span>🏭 <%= u.profile.seller_type %></span><% } %>
+          <span>📅 عضو از <%= date(u.created_at) %></span>
+          <% if (rating.c) { %><span class="gold">★ <%= rating.a %> (<%= num(rating.c) %> <%= t('reviews') %>)</span><% } %>
+        </div>
+        <p class="small" style="margin:12px 0 0;max-width:680px"><%= u.profile.about || '' %></p>
+      </div>
+      <div class="col" style="min-width:190px">
+        <% if (!user || user.id !== u.id) { %>
+          <a class="btn btn-primary btn-block" href="/messages/start?user=<%= u.id %>">💬 <%= t('chat') %></a>
+          <form method="post" action="/u/<%= u.id %>/follow"><button class="btn btn-ghost btn-block"><%= following?'✓ دنبال می‌کنید':'+ دنبال کردن' %></button></form>
+          <button class="btn btn-soft btn-block" data-bookmark="user:<%= u.id %>"><%= saved?'★':'☆' %> ذخیره در لیست</button>
+          <% if (canPhone && u.phone) { %><a class="btn btn-ok btn-block" href="tel:<%= u.phone %>">📞 <%= u.phone %></a>
+          <% } else { %><a class="btn btn-soft btn-block" href="/pricing">🔓 شماره تماس</a><% } %>
+        <% } else { %>
+          <a class="btn btn-primary btn-block" href="/account/profile">✎ ویرایش پروفایل</a>
+          <a class="btn btn-ghost btn-block" href="/dashboard">داشبورد</a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="stats" style="margin-top:20px">
+      <div><div class="v mono"><%= num(counts.listings) %></div><div class="k"><%= t('nav_products') %></div></div>
+      <div><div class="v mono"><%= num(counts.requests) %></div><div class="k">درخواست خرید</div></div>
+      <div><div class="v mono"><%= num(counts.followers) %></div><div class="k">دنبال‌کننده</div></div>
+      <div><div class="v mono"><%= num(counts.orders) %></div><div class="k">معامله موفق</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-sm"><div class="wrap">
+  <% if (stories.length) { %>
+  <div class="story-rail">
+    <% stories.forEach(function(s){ %><a class="story-item" href="/stories/<%= s.id %>">
+      <div class="story-ring"><% if(s.media_path){ %><img src="<%= s.media_path %>"><% } else { %><div class="ph">🎬</div><% } %></div>
+      <div class="nm truncate"><%= s.caption ? s.caption.slice(0,10) : 'story' %></div></a><% }) %>
+  </div><% } %>
+
+  <div class="split-r">
+    <div>
+      <div class="panel-head"><h2 style="margin:0"><%= t('nav_products') %></h2><a href="/products?seller_id=<%= u.id %>" class="small gold"><%= t('view_all') %> →</a></div>
+      <% if (listings.length) { %>
+        <div class="grid g3"><% listings.forEach(function(l){ %><%- include('../partials/pcard', {l:l}) %><% }) %></div>
+      <% } else { %><div class="empty-state"><div class="ic">📦</div><%= t('empty') %></div><% } %>
+
+      <% if (requests.length) { %>
+      <h2 style="margin:32px 0 14px">درخواست‌های خرید</h2>
+      <div class="grid g2">
+        <% requests.forEach(function(b){ %>
+        <a class="card card-pad card-hover" href="/buy-requests/<%= b.id %>">
+          <b class="clamp2"><%= b.title %></b>
+          <div class="small dim" style="margin-top:6px">🔢 <%= num(b.quantity) %> <%= b.unit||'' %></div>
+        </a><% }) %>
+      </div><% } %>
+
+      <h2 id="reviews" style="margin:32px 0 14px">نظرات (<%= num(rating.c||0) %>)</h2>
+      <div class="panel">
+        <% if (reviews.length) { reviews.forEach(function(rv){ %>
+          <div style="padding:14px 0;border-bottom:1px solid var(--line)">
+            <div class="row"><span class="avatar av-32"><%= (rv.display_name||'U').charAt(0) %></span>
+              <b class="small"><%= rv.display_name %></b>
+              <span class="rating"><%= '★'.repeat(rv.score) %></span>
+              <% if(rv.transaction_verified){ %><span class="badge ok xs">تأییدشده</span><% } %>
+              <span class="spacer"></span><span class="xs dim"><%= date(rv.created_at) %></span></div>
+            <p class="small" style="margin:8px 0 0"><%= rv.body %></p>
+            <% if (rv.seller_response) { %><div class="glass" style="padding:10px;margin-top:8px;font-size:13px">↳ پاسخ فروشنده: <%= rv.seller_response %></div><% } %>
+          </div>
+        <% })} else { %><p class="small dim">هنوز نظری ثبت نشده.</p><% } %>
+
+        <% if (user && user.id !== u.id) { %>
+        <form method="post" action="/u/<%= u.id %>/review" style="margin-top:18px">
+          <div class="field"><label>امتیاز شما</label>
+            <select name="score"><% [5,4,3,2,1].forEach(function(n){ %><option value="<%= n %>">★ <%= n %></option><% }) %></select></div>
+          <div class="field"><label>نظر</label><textarea name="body" required placeholder="تجربه همکاری خود را بنویسید…"></textarea></div>
+          <button class="btn btn-primary">ثبت نظر</button>
+        </form><% } %>
+      </div>
+    </div>
+
+    <aside class="sticky">
+      <div class="panel">
+        <b style="display:block;margin-bottom:12px">اطلاعات شرکت</b>
+        <dl class="kv small">
+          <% [['نام تجاری',u.profile.business_name],['شماره ثبت',u.profile.registration_no],['شناسه مالیاتی',u.profile.tax_no],
+              ['صنعت',u.profile.industry],['آدرس',u.profile.address],['وب‌سایت',u.profile.website],
+              ['ساعات کاری',u.profile.business_hours],['بازار صادراتی',u.profile.export_markets],
+              ['بازار وارداتی',u.profile.import_markets],['اینکوترمز',u.profile.incoterms],
+              ['ترجیح MOQ',u.profile.moq_preference]].forEach(function(x){ if(x[1]){ %>
+            <dt><%= x[0] %></dt><dd><%= x[1] %></dd><% }}) %>
+        </dl>
+        <% if (u.profile.website||u.profile.social_instagram||u.profile.social_linkedin) { %>
+        <div class="row" style="margin-top:12px">
+          <% if(u.profile.website){ %><a class="btn btn-soft btn-sm" href="<%= u.profile.website %>" rel="nofollow noopener">🌐</a><% } %>
+          <% if(u.profile.social_instagram){ %><a class="btn btn-soft btn-sm" href="<%= u.profile.social_instagram %>" rel="nofollow noopener">IG</a><% } %>
+          <% if(u.profile.social_linkedin){ %><a class="btn btn-soft btn-sm" href="<%= u.profile.social_linkedin %>" rel="nofollow noopener">in</a><% } %>
+        </div><% } %>
+        <% if (u.profile.catalog_pdf) { %><a class="btn btn-ghost btn-block btn-sm" style="margin-top:12px" href="<%= u.profile.catalog_pdf %>">📄 کاتالوگ PDF</a><% } %>
+      </div>
+
+      <% if (team.length) { %>
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:12px">تیم</b>
+        <% team.forEach(function(m){ %>
+        <div class="row" style="padding:7px 0"><span class="avatar av-32"><%= (m.name||'?').charAt(0) %></span>
+          <div><div class="small bold"><%= m.name %></div><div class="xs dim"><%= m.role %></div></div></div>
+        <% }) %>
+      </div><% } %>
+
+      <% if (user && lists.length) { %>
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:12px">افزودن به لیست CRM</b>
+        <form method="post" action="/crm/add">
+          <input type="hidden" name="target_user_id" value="<%= u.id %>">
+          <div class="field"><select name="list_id"><% lists.forEach(function(L){ %><option value="<%= L.id %>"><%= L.name %></option><% }) %></select></div>
+          <div class="field"><select name="status">
+            <% crmStatuses.forEach(function(x){ %>
+            <option value="<%= x[0] %>"><%= x[1] %></option><% }) %></select></div>
+          <button class="btn btn-ghost btn-block btn-sm">افزودن</button>
+        </form>
+      </div><% } %>
+    </aside>
+  </div>
+</div></div>

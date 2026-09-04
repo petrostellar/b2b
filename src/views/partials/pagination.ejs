@@ -1,0 +1,10 @@
+<% if (pages > 1) { %>
+<nav class="pagination">
+  <% if (page > 1) { %><a href="<%= buildQS({page: page-1}) %>">‹</a><% } %>
+  <% let s = Math.max(1, page-2), e = Math.min(pages, s+4); s = Math.max(1, e-4);
+     for (let i=s;i<=e;i++) { %>
+    <% if (i===page) { %><span class="on"><%= num(i) %></span><% } else { %><a href="<%= buildQS({page:i}) %>"><%= num(i) %></a><% } %>
+  <% } %>
+  <% if (page < pages) { %><a href="<%= buildQS({page: page+1}) %>">›</a><% } %>
+</nav>
+<% } %>

@@ -1,0 +1,15 @@
+<div class="section"><div class="wrap">
+  <span class="eyebrow">INSIGHTS</span><h1><%= t('nav_blog') %></h1>
+  <% if(!rows.length){ %><div class="empty">هنوز مطلبی منتشر نشده است.</div><% } %>
+  <div class="grid g3">
+  <% rows.forEach(function(p){ %>
+    <a class="panel anim" href="/blog/<%= p.slug %>">
+      <% if (p.cover) { %><img src="<%= p.cover %>" alt="" style="width:100%;border-radius:12px;margin-bottom:10px"><% } %>
+      <span class="badge">مقاله</span>
+      <h3 style="margin:8px 0 6px"><%= p.title %></h3>
+      <p class="dim small clamp2"><%= p.excerpt || '' %></p>
+      <div class="xs dim" style="margin-top:8px"><%= date(p.created_at) %></div>
+    </a>
+  <% }) %>
+  </div>
+</div></div>

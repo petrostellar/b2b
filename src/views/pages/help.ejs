@@ -1,0 +1,20 @@
+<div class="section"><div class="wrap">
+  <span class="eyebrow">HELP CENTER</span><h1><%= t('nav_help') %></h1>
+  <div class="grid g3" style="margin-bottom:24px">
+    <a class="panel anim" href="/guide/seller"><h3>🏭 راهنمای فروشندگان</h3><p class="dim small">از ثبت‌نام تا نردبان و مدیریت سفارش‌ها.</p></a>
+    <a class="panel anim" href="/guide/buyer"><h3>🛒 راهنمای خریداران</h3><p class="dim small">جستجو، ثبت درخواست خرید و مقایسه پیشنهادها.</p></a>
+    <a class="panel anim" href="/guide/kyc"><h3>🛡 احراز هویت</h3><p class="dim small">مدارک لازم برای اشخاص حقیقی و حقوقی.</p></a>
+  </div>
+  <% if (!faqs.length) { %><div class="empty">هنوز پرسشی ثبت نشده است.</div><% } %>
+  <% groups.filter(Boolean).forEach(function(g){ %>
+    <h2 style="margin-top:26px"><%= g %></h2>
+    <% faqs.filter(function(f){return f.group_name===g}).forEach(function(f){ %>
+      <details class="panel" style="margin-bottom:10px"><summary><b><%= pick(f,'q') %></b></summary>
+        <div class="prose" style="margin-top:10px"><%- pick(f,'a') %></div></details>
+    <% }) %>
+  <% }) %>
+  <div class="panel" style="margin-top:26px;text-align:center">
+    <h3>پاسخ خود را پیدا نکردید؟</h3>
+    <a class="btn gold" href="/support">ثبت تیکت پشتیبانی</a>
+  </div>
+</div></div>

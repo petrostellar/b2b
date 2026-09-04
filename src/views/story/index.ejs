@@ -1,0 +1,16 @@
+<div class="section-sm"><div class="wrap">
+  <div class="row-between"><div><span class="eyebrow">STORIES</span><h1 style="margin:0">استوری‌های تجاری</h1></div>
+    <% if (user) { %><a class="btn btn-primary" href="/stories/new">+ ثبت استوری</a><% } %></div>
+  <div class="grid g6" style="margin-top:20px">
+    <% rows.forEach(function(s){ %>
+    <a class="card card-hover anim" href="/stories/<%= s.id %>" style="aspect-ratio:9/16;position:relative;overflow:hidden">
+      <% if(s.media_path){ %><img src="<%= s.media_path %>" style="width:100%;height:100%;object-fit:cover">
+      <% } else { %><div style="width:100%;height:100%;background:var(--hero);display:grid;place-items:center;font-size:34px">🎬</div><% } %>
+      <div style="position:absolute;inset:auto 0 0 0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.8))">
+        <div class="row" style="gap:6px"><span class="avatar av-24"><%= (s.business_name||s.display_name||'?').charAt(0) %></span>
+          <span class="xs" style="color:#fff"><%= s.business_name||s.display_name %></span></div>
+        <div class="xs clamp2" style="color:#ddd;margin-top:4px"><%= s.caption||'' %></div>
+      </div></a><% }) %>
+  </div>
+  <% if(!rows.length){ %><div class="empty-state"><div class="ic">🎬</div>استوری فعالی وجود ندارد.</div><% } %>
+</div></div>

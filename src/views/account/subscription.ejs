@@ -1,0 +1,22 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>عضویت من</h1>
+  <% if (sub) { %>
+  <div class="panel" style="background:var(--hero)">
+    <div class="row-between"><div><span class="badge gold">★ <%= pick(sub,'name') %></span>
+      <div class="small dim" style="margin-top:8px">از <%= date(sub.starts_at) %> تا <%= date(sub.ends_at) %></div></div>
+      <form method="post" action="/account/subscription/cancel"><button class="btn btn-danger btn-sm">لغو عضویت</button></form></div>
+  </div>
+  <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">امکانات فعال شما</b>
+    <% ents.forEach(function(e){ %><div class="row-between small" style="padding:7px 0;border-top:1px solid var(--line)">
+      <span><%= e.ekey %></span><span class="badge ok xs"><%= e.value %></span></div><% }) %>
+  </div>
+  <% } else { %>
+    <div class="empty-state"><div class="ic">★</div>عضویت فعالی ندارید.<div><a class="btn btn-primary" style="margin-top:14px" href="/pricing">مشاهده پلن‌ها</a></div></div>
+  <% } %>
+  <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">تاریخچه و فاکتورها</b>
+    <div class="table-wrap"><table class="data"><thead><tr><th>پلن</th><th>مبلغ</th><th>شروع</th><th>پایان</th><th>وضعیت</th></tr></thead>
+      <tbody><% history.forEach(function(h){ %><tr><td class="small"><%= pick(h,'name') %></td>
+        <td class="mono"><%= money(h.price_minor/100,h.currency) %></td><td class="small"><%= date(h.starts_at) %></td>
+        <td class="small"><%= date(h.ends_at) %></td><td><span class="badge <%= tone(h.status) %> xs"><%= h.status %></span></td></tr><% }) %></tbody></table></div>
+  </div>
+</div></div>

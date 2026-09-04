@@ -1,0 +1,204 @@
+<div class="section-sm"><div class="wrap">
+  <nav class="breadcrumb">
+    <a href="/"><%= t('nav_home') %></a>
+    <% breadcrumb.forEach(function(c){ %> › <a href="/category/<%= c.slug %>"><%= pick(c,'name') %></a><% }) %>
+    › <span class="gold truncate" style="max-width:280px"><%= l.title %></span>
+  </nav>
+
+  <% if (owner && l.status !== 'approved') { %>
+    <div class="alert <%= tone(l.status) %>">وضعیت آگهی شما: <b><%= statusLabel(l.status) %></b>
+      <% if (l.moderation_reason) { %> — <%= l.moderation_reason %><% } %>
+      <a href="/sell/<%= l.id %>/edit" class="gold">ویرایش</a></div>
+  <% } %>
+
+  <div class="split-r">
+    <div>
+      <!-- GALLERY -->
+      <div class="gallery-main">
+        <% if (media.length) { %><img id="galleryMain" src="<%= media[0].path %>" alt="<%= l.title %>">
+        <% } else { %><div style="width:100%;height:100%;display:grid;place-items:center;font-size:60px;opacity:.25">📦</div><% } %>
+      </div>
+      <% if (media.length > 1) { %>
+      <div class="gallery-thumbs">
+        <% media.forEach(function(m,i){ %><img src="<%= m.path %>" data-gallery="<%= m.path %>" class="<%= i===0?'on':'' %>" alt=""><% }) %>
+      </div><% } %>
+
+      <!-- TITLE BLOCK -->
+      <div class="panel" style="margin-top:20px">
+        <div class="row" style="gap:7px;margin-bottom:10px">
+          <span class="badge <%= tone(l.status) %>"><%= statusLabel(l.status) %></span>
+          <span class="badge"><%= l.listing_type %></span>
+          <% if (l.is_featured) { %><span class="badge gold"><%= t('featured') %></span><% } %>
+          <% if (l.negotiable) { %><span class="badge info">قابل مذاکره</span><% } %>
+          <% if (l.kyc_ok) { %><span class="badge ok">✔ فروشنده احراز شده</span><% } %>
+        </div>
+        <h1 style="font-size:27px"><%= l.title %></h1>
+        <div class="row small dim">
+          <% if (l.variety) { %><span>نوع/واریته: <b class="gold"><%= l.variety %></b></span><% } %>
+          <span>👁 <%= num(l.views_count) %> بازدید</span>
+          <span>🕓 آخرین به‌روزرسانی قیمت: <%= date(l.price_updated_at || l.updated_at) %></span>
+        </div>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="panel" style="margin-top:18px">
+        <div class="panel-head"><h3 style="margin:0"><%= t('description') %></h3></div>
+        <p style="white-space:pre-wrap"><%= l.description || '—' %></p>
+      </div>
+
+      <!-- SPECIFICATIONS -->
+      <div class="panel" style="margin-top:18px">
+        <div class="panel-head"><h3 style="margin:0"><%= t('details') %></h3></div>
+        <dl class="kv">
+          <% [['دسته‌بندی', pick(l,'cat_name')],
+              ['نوع محصول / واریته', l.variety],
+              ['کشور مبدأ', l.origin_country], ['استان', l.origin_province], ['شهر', l.origin_city],
+              ['کیفیت', l.quality], ['نوع بسته‌بندی', l.packaging], ['گرید', l.grade],
+              ['تازگی', l.freshness], ['روش نگهداری', l.storage_method], ['روش مراقبت', l.maintenance],
+              ['ابعاد', l.dimensions], ['گواهی کیفی و سلامت', l.certifications],
+              ['مزایا نسبت به مشابه', l.benefits],
+              ['شرایط پرداخت', l.payment_terms], ['شرایط تحویل', l.delivery_terms],
+              ['زمان آماده‌سازی', l.lead_time_days ? l.lead_time_days + ' روز' : null],
+              ['وضعیت موجودی', l.availability], ['حالت مالیات', l.tax_mode],
+              ['یادداشت فروشنده', l.seller_notes]].forEach(function(x){ if(x[1]) { %>
+            <dt><%= x[0] %></dt><dd><%= x[1] %></dd>
+          <% }}) %>
+          <% attrs.forEach(function(a){ %>
+            <dt><%= pick(a,'label') || a.akey %></dt><dd><%= a.value %> <%= a.unit||'' %></dd>
+          <% }) %>
+        </dl>
+      </div>
+
+      <!-- PRICE HISTORY -->
+      <% if (priceHistory.length) { %>
+      <div class="panel" style="margin-top:18px">
+        <div class="panel-head"><h3 style="margin:0">تاریخچه قیمت</h3></div>
+        <div class="table-wrap"><table class="data">
+          <thead><tr><th>تاریخ</th><th>قیمت قبلی</th><th>قیمت جدید</th><th>دلیل</th></tr></thead>
+          <tbody><% priceHistory.forEach(function(h){ %>
+            <tr><td class="small"><%= date(h.created_at) %></td>
+            <td class="mono"><%= money(h.old_price, h.currency) %></td>
+            <td class="mono gold"><%= money(h.new_price, h.currency) %></td>
+            <td class="small dim"><%= h.reason||'—' %></td></tr>
+          <% }) %></tbody></table></div>
+      </div><% } %>
+
+      <!-- SELLER REVIEWS -->
+      <div class="panel" style="margin-top:18px">
+        <div class="panel-head"><h3 style="margin:0">نظرات درباره فروشنده</h3>
+          <a href="/u/<%= l.seller_id %>#reviews" class="small gold"><%= t('view_all') %> →</a></div>
+        <% if (reviews.length) { reviews.forEach(function(rv){ %>
+          <div style="padding:12px 0;border-bottom:1px solid var(--line)">
+            <div class="row"><span class="avatar av-32"><%= (rv.display_name||'U').charAt(0) %></span>
+              <b class="small"><%= rv.display_name %></b>
+              <span class="rating"><%= '★'.repeat(rv.score) %><span class="dim"><%= '☆'.repeat(5-rv.score) %></span></span>
+              <% if (rv.transaction_verified) { %><span class="badge ok xs">خرید تأییدشده</span><% } %>
+              <span class="spacer"></span><span class="xs dim"><%= date(rv.created_at) %></span></div>
+            <p class="small" style="margin:8px 0 0"><%= rv.body %></p>
+          </div>
+        <% })} else { %><p class="small dim">هنوز نظری ثبت نشده است.</p><% } %>
+      </div>
+
+      <!-- OTHER / SIMILAR -->
+      <% if (others.length) { %>
+      <h3 style="margin:30px 0 14px"><%= t('other_products') %></h3>
+      <div class="grid g4"><% others.forEach(function(l){ %><%- include('../partials/pcard', {l:l}) %><% }) %></div>
+      <% } %>
+      <% if (similar.length) { %>
+      <h3 style="margin:30px 0 14px"><%= t('similar') %></h3>
+      <div class="grid g4"><% similar.forEach(function(l){ %><%- include('../partials/pcard', {l:l}) %><% }) %></div>
+      <% } %>
+    </div>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sticky">
+      <div class="panel">
+        <% if (l.price_on_request) { %>
+          <div class="big bold gold">قیمت بر اساس استعلام</div>
+        <% } else { %>
+          <div style="font-size:31px;font-weight:800;letter-spacing:-.02em" class="gold mono"><%= money(l.price, l.currency) %></div>
+          <div class="small dim">به ازای هر <%= l.price_unit || l.measure_unit || 'واحد' %></div>
+          <% if (l.wholesale_price || l.retail_price) { %>
+          <div class="row small" style="margin-top:8px">
+            <% if (l.wholesale_price) { %><span class="badge">عمده: <%= money(l.wholesale_price,l.currency) %></span><% } %>
+            <% if (l.retail_price) { %><span class="badge">خرده: <%= money(l.retail_price,l.currency) %></span><% } %>
+          </div><% } %>
+        <% } %>
+
+        <% if (l.tier_pricing) { try { const tp = JSON.parse(l.tier_pricing); if (tp.length) { %>
+        <div class="table-wrap" style="margin-top:14px"><table class="data">
+          <thead><tr><th>تعداد</th><th>قیمت واحد</th></tr></thead>
+          <tbody><% tp.forEach(function(x){ %><tr><td><%= num(x.from) %>+</td><td class="gold mono"><%= money(x.price,l.currency) %></td></tr><% }) %></tbody>
+        </table></div>
+        <% }} catch(e){} } %>
+
+        <dl class="kv" style="margin-top:18px">
+          <dt><%= t('moq') %></dt><dd><%= num(l.moq) %> <%= l.moq_unit||'' %></dd>
+          <dt><%= t('inventory') %></dt><dd><%= num(l.inventory) %> <%= l.inventory_unit||'' %></dd>
+          <dt>وضعیت</dt><dd><span class="badge <%= l.availability==='in_stock'?'ok':'warn' %>"><%= l.availability %></span></dd>
+          <dt><%= t('location') %></dt><dd><%= [l.origin_city,l.origin_province,l.origin_country].filter(Boolean).join('، ') %></dd>
+        </dl>
+
+        <div class="col" style="margin-top:18px">
+          <% if (owner) { %>
+            <a class="btn btn-primary btn-block" href="/sell/<%= l.id %>/edit">✎ ویرایش آگهی</a>
+            <a class="btn btn-ghost btn-block" href="/sell/<%= l.id %>/analytics">📊 گزارش محصول</a>
+            <a class="btn btn-ghost btn-block" href="/sell/<%= l.id %>/price">💲 به‌روزرسانی قیمت</a>
+            <a class="btn btn-ghost btn-block" href="/sell/<%= l.id %>/stock">📦 به‌روزرسانی موجودی</a>
+            <a class="btn btn-soft btn-block" href="/sell/<%= l.id %>/boost">🚀 نردبان / ارتقا</a>
+          <% } else { %>
+            <a class="btn btn-primary btn-block btn-lg" href="/messages/start?user=<%= l.seller_id %>&listing=<%= l.id %>">💬 <%= t('chat') %></a>
+            <a class="btn btn-ghost btn-block" href="/quotes/new?listing=<%= l.id %>">📄 <%= t('request_quote') %></a>
+            <a class="btn btn-ghost btn-block" href="/quotes/new?listing=<%= l.id %>&sample=1">🧪 <%= t('request_sample') %></a>
+            <% if (l.listing_type === 'retail') { %>
+              <form method="post" action="/cart/add"><input type="hidden" name="listing_id" value="<%= l.id %>">
+                <input type="hidden" name="quantity" value="<%= l.moq||1 %>">
+                <button class="btn btn-soft btn-block">🛒 <%= t('add_cart') %></button></form>
+            <% } %>
+            <% if (canPhone && l.seller_phone) { %>
+              <a class="btn btn-ok btn-block" href="tel:<%= l.seller_phone %>">📞 تماس</a>
+            <% } else if (!canPhone) { %>
+              <a class="btn btn-soft btn-block" href="/pricing">🔓 مشاهده شماره تماس (عضویت ویژه)</a>
+            <% } %>
+            <div class="row" style="margin-top:4px">
+              <button class="btn btn-soft btn-sm" data-bookmark="listing:<%= l.id %>"><%= saved ? '★' : '☆' %> <%= t('bookmark') %></button>
+              <a class="btn btn-soft btn-sm" href="/report?type=listing&id=<%= l.id %>">⚑ <%= t('report') %></a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- SELLER CARD -->
+      <div class="panel" style="margin-top:18px">
+        <a href="/u/<%= seller.id %>" class="row">
+          <span class="avatar av-56"><% if(seller.avatar){ %><img src="<%= seller.avatar %>"><% } else { %><%= (seller.profile.business_name||seller.display_name||'S').charAt(0) %><% } %></span>
+          <div style="flex:1;min-width:0">
+            <b class="truncate" style="display:block"><%= seller.profile.business_name || seller.display_name %></b>
+            <div class="xs dim"><%= seller.profile.seller_type||'' %> · 📍 <%= seller.profile.city||'' %></div>
+          </div>
+        </a>
+        <div class="row" style="gap:6px;margin:12px 0">
+          <% if (l.kyc_ok) { %><span class="badge ok xs">✔ <%= t('verified') %></span><% } %>
+          <span class="badge xs">Trust <%= seller.trust_score %></span>
+          <% if (l.seller_rating) { %><span class="badge gold xs">★ <%= l.seller_rating %> (<%= l.seller_reviews %>)</span><% } %>
+        </div>
+        <dl class="kv small">
+          <dt>عضویت از</dt><dd><%= date(seller.created_at) %></dd>
+          <dt>نرخ پاسخ</dt><dd><%= num(seller.profile.response_rate||0) %>%</dd>
+          <% if (seller.profile.incoterms) { %><dt>اینکوترمز</dt><dd><%= seller.profile.incoterms %></dd><% } %>
+          <% if (seller.profile.export_markets) { %><dt>بازار صادراتی</dt><dd><%= seller.profile.export_markets %></dd><% } %>
+        </dl>
+        <a class="btn btn-ghost btn-block btn-sm" style="margin-top:12px" href="/u/<%= seller.id %>">مشاهده غرفه فروشنده →</a>
+      </div>
+
+      <div class="panel" style="margin-top:18px">
+        <b class="small">🔐 تجارت امن</b>
+        <ul class="small dim" style="padding-inline-start:18px;margin:10px 0 0">
+          <li>پرداخت امانی تا تأیید دریافت کالا</li>
+          <li>بررسی مدارک فروشنده توسط تیم اعتماد</li>
+          <li>پشتیبانی حل اختلاف و استرداد</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div></div>

@@ -1,0 +1,32 @@
+<div class="section"><div class="wrap">
+  <span class="eyebrow">CONTACT</span><h1><%= t('nav_contact') %></h1>
+  <div class="grid g2">
+    <div class="panel">
+      <h3>ارسال پیام</h3>
+      <form method="post" action="/support">
+        <label>موضوع</label><input name="subject" required maxlength="140">
+        <label>دسته</label>
+        <select name="category"><option value="general">عمومی</option><option value="sales">فروش و عضویت</option><option value="technical">فنی</option><option value="abuse">گزارش تخلف</option></select>
+        <label>متن پیام</label><textarea name="body" rows="6" required minlength="10"></textarea>
+        <button class="btn gold block" type="submit">ارسال تیکت</button>
+        <p class="xs dim">برای ثبت تیکت باید وارد حساب خود شوید.</p>
+      </form>
+    </div>
+    <div class="panel">
+      <h3>راه‌های ارتباطی</h3>
+      <div class="row-between" style="padding:10px 0;border-bottom:1px solid var(--line)"><span>ایمیل پشتیبانی</span><b dir="ltr">support@mydan.market</b></div>
+      <div class="row-between" style="padding:10px 0;border-bottom:1px solid var(--line)"><span>واحد فروش</span><b dir="ltr">sales@mydan.market</b></div>
+      <div class="row-between" style="padding:10px 0;border-bottom:1px solid var(--line)"><span>ساعات پاسخگویی</span><b>شنبه تا پنجشنبه، ۹ تا ۱۸</b></div>
+      <div class="row-between" style="padding:10px 0"><span>زمان پاسخ میانگین</span><b>کمتر از ۴ ساعت کاری</b></div>
+      <h3 style="margin-top:22px">میانبرها</h3>
+      <div class="chips">
+        <a class="chip" href="/help">مرکز راهنما</a>
+        <a class="chip" href="/guide/seller">راهنمای فروشندگان</a>
+        <a class="chip" href="/guide/buyer">راهنمای خریداران</a>
+        <a class="chip" href="/guide/kyc">احراز هویت</a>
+        <a class="chip" href="/page/terms">قوانین</a>
+        <a class="chip" href="/page/privacy">حریم خصوصی</a>
+      </div>
+    </div>
+  </div>
+</div></div>

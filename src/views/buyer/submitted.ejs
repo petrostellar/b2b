@@ -1,0 +1,22 @@
+<div class="section"><div class="wrap wrap-mid">
+  <div class="panel center">
+    <div style="font-size:56px">🎯</div><h1>درخواست شما ثبت شد</h1>
+    <p>وضعیت: <span class="badge <%= tone(b.status) %>"><%= statusLabel(b.status) %></span></p>
+    <p class="small">تأمین‌کنندگان مرتبط مطلع شدند و به‌زودی پیشنهاد قیمت دریافت خواهید کرد.</p>
+    <div class="row" style="justify-content:center;margin-top:18px">
+      <a class="btn btn-primary" href="/buy-requests/<%= b.id %>">مشاهده درخواست</a>
+      <a class="btn btn-ghost" href="/my-requests">درخواست‌های من</a>
+    </div>
+  </div>
+  <% if (sellers.length) { %>
+  <h2 style="margin:30px 0 14px">تأمین‌کنندگان پیشنهادی</h2>
+  <div class="grid g3">
+    <% sellers.forEach(function(s){ %>
+    <div class="card card-pad card-hover">
+      <a href="/u/<%= s.id %>" class="row"><span class="avatar av-40"><%= (s.business_name||s.display_name||'S').charAt(0) %></span>
+        <div style="min-width:0"><b class="small truncate"><%= s.business_name||s.display_name %></b>
+        <div class="xs dim"><%= num(s.lc) %> کالا · <%= s.city||'' %></div></div></a>
+      <a class="btn btn-soft btn-block btn-sm" style="margin-top:12px" href="/messages/start?user=<%= s.id %>&rfq=<%= b.id %>">💬 ارسال پیام</a>
+    </div><% }) %>
+  </div><% } %>
+</div></div>

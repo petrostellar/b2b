@@ -1,0 +1,21 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>پشتیبانی</h1>
+  <div class="split-r">
+    <div class="panel">
+      <% if (tickets.length) { tickets.forEach(function(t){ %>
+      <a href="/support/<%= t.id %>" class="row-between" style="padding:12px 0;border-bottom:1px solid var(--line)">
+        <div><b class="small"><%= t.subject %></b><div class="xs dim"><%= t.category %> · <%= date(t.created_at) %></div></div>
+        <span class="badge <%= tone(t.status) %>"><%= t.status %></span></a>
+      <% })} else { %><div class="empty-state"><div class="ic">🎧</div>تیکتی ندارید.</div><% } %>
+    </div>
+    <form method="post" class="panel">
+      <b style="display:block;margin-bottom:12px">تیکت جدید</b>
+      <div class="field"><label>دسته</label><select name="category">
+        <% ['حساب کاربری','احراز هویت','آگهی و کالا','پرداخت','سفارش','گزارش تخلف','سایر'].forEach(function(c){ %><option><%= c %></option><% }) %></select></div>
+      <div class="field"><label class="req">موضوع</label><input name="subject" required></div>
+      <div class="field"><label>اولویت</label><select name="priority"><option value="low">کم</option><option value="normal" selected>عادی</option><option value="high">زیاد</option></select></div>
+      <div class="field"><label class="req">شرح</label><textarea name="body" required></textarea></div>
+      <button class="btn btn-primary btn-block">ارسال تیکت</button>
+    </form>
+  </div>
+</div></div>

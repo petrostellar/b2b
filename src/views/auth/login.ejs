@@ -1,0 +1,43 @@
+<div class="section">
+<div class="wrap" style="max-width:1000px">
+  <div class="split-r" style="grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+    <div>
+      <span class="eyebrow"><%= siteName %> ACCOUNT</span>
+      <h1 style="font-size:38px"><%= mode==='register' ? t('register') : t('login') %></h1>
+      <p><%= t('hero_sub') %></p>
+      <div class="stack" style="margin-top:26px">
+        <div class="row"><span class="badge gold">۱</span><span class="small">ورود بدون رمز با کد یکبار مصرف پیامکی</span></div>
+        <div class="row"><span class="badge gold">۲</span><span class="small">انتخاب نقش خریدار یا فروشنده در همان حساب</span></div>
+        <div class="row"><span class="badge gold">۳</span><span class="small">احراز هویت و دریافت نشان اعتماد</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <form method="post" action="/auth/otp/request">
+        <div class="field">
+          <label class="req">شماره موبایل / Mobile number</label>
+          <div class="input-group">
+            <select name="dial" style="max-width:120px">
+              <% ['+90 TR','+98 IR','+971 AE','+7 RU','+86 CN','+49 DE','+44 GB'].forEach(function(d){ %><option><%= d %></option><% }) %>
+            </select>
+            <input type="tel" name="phone" required placeholder="5xx xxx xx xx" value="">
+          </div>
+          <div class="hint">کد تأیید ۶ رقمی برای شما ارسال می‌شود.</div>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg">دریافت کد تأیید</button>
+      </form>
+
+      <div class="divider-text">یا ورود با رمز عبور</div>
+
+      <form method="post" action="/auth/password/login">
+        <div class="field"><label>ایمیل یا موبایل</label><input name="identifier" type="text"></div>
+        <div class="field"><label>رمز عبور</label><input name="password" type="password"></div>
+        <button class="btn btn-ghost btn-block">ورود</button>
+      </form>
+
+      <p class="hint center" style="margin-top:18px">
+        با ادامه، <a href="/page/terms" class="gold">قوانین</a> و <a href="/page/privacy" class="gold">حریم خصوصی</a> را می‌پذیرید.
+      </p>
+    </div>
+  </div>
+</div>
+</div>

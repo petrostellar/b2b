@@ -1,0 +1,72 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <nav class="breadcrumb"><a href="/orders">سفارش‌ها</a> › <span class="gold"><%= o.order_no %></span></nav>
+  <div class="split-r">
+    <div>
+      <div class="panel">
+        <div class="row-between"><h1 style="margin:0;font-size:24px"><%= o.order_no %></h1>
+          <span class="badge <%= tone(o.status) %>"><%= statusLabel(o.status) %></span></div>
+        <div class="table-wrap" style="margin-top:16px"><table class="data">
+          <thead><tr><th>کالا</th><th>تعداد</th><th>قیمت واحد</th><th>جمع</th></tr></thead>
+          <tbody><% items.forEach(function(i){ %><tr><td class="small"><%= i.title %></td><td class="mono"><%= num(i.quantity) %></td>
+            <td class="mono"><%= money(i.unit_price,i.currency) %></td><td class="mono"><%= money(i.line_total,i.currency) %></td></tr><% }) %></tbody></table></div>
+        <dl class="kv" style="margin-top:16px">
+          <dt>جمع</dt><dd class="mono"><%= money(o.subtotal,o.currency) %></dd>
+          <dt>مالیات</dt><dd class="mono"><%= money(o.tax,o.currency) %></dd>
+          <dt>حمل</dt><dd class="mono"><%= money(o.shipping,o.currency) %></dd>
+          <dt><b>مبلغ کل</b></dt><dd class="mono gold bold"><%= money(o.total,o.currency) %></dd>
+          <% if(o.incoterm){ %><dt>اینکوترمز</dt><dd><%= o.incoterm %></dd><% } %>
+          <% if(o.po_reference){ %><dt>شماره PO</dt><dd><%= o.po_reference %></dd><% } %>
+          <% if(o.ship_address){ %><dt>آدرس تحویل</dt><dd><%= [o.ship_name,o.ship_phone,o.ship_city,o.ship_country,o.ship_address].filter(Boolean).join(' — ') %></dd><% } %>
+        </dl>
+      </div>
+
+      <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">تایم‌لاین وضعیت</b>
+        <% history.forEach(function(h){ %>
+        <div class="row" style="padding:9px 0;border-top:1px solid var(--line)">
+          <span class="badge <%= tone(h.to_status) %> xs"><%= statusLabel(h.to_status) %></span>
+          <span class="small dim"><%= h.note||'' %></span><span class="spacer"></span>
+          <span class="xs dim"><%= date(h.created_at) %></span></div><% }) %>
+      </div>
+
+      <% if (shipments.length) { %>
+      <div class="panel" style="margin-top:18px"><b style="display:block;margin-bottom:12px">حمل و نقل</b>
+        <% shipments.forEach(function(s){ %>
+        <dl class="kv small"><dt>حامل</dt><dd><%= s.carrier %></dd><dt>روش</dt><dd><%= s.method %></dd>
+          <dt>کد رهگیری</dt><dd class="mono"><%= s.tracking_no||'—' %></dd><dt>وضعیت</dt><dd><%= s.status %></dd></dl><% }) %>
+      </div><% } %>
+    </div>
+
+    <aside class="sticky">
+      <div class="panel">
+        <b style="display:block;margin-bottom:12px">پرداخت</b>
+        <% if (o.payment_status !== 'paid') { %>
+          <div class="badge warn">پرداخت نشده</div>
+          <% if (canPay) { %><a class="btn btn-primary btn-block" style="margin-top:12px" href="/orders/<%= o.id %>/pay">پرداخت <%= money(o.total,o.currency) %></a><% } %>
+        <% } else { %>
+          <div class="badge ok">✓ پرداخت شده</div>
+          <% if (payment) { %><div class="xs dim" style="margin-top:8px">مرجع: <%= payment.provider_ref %><br><%= payment.escrow?'🔒 امانی':'مستقیم' %></div><% } %>
+        <% } %>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:12px">تغییر وضعیت</b>
+        <form method="post" action="/orders/<%= o.id %>/status">
+          <div class="field"><select name="status">
+            <% ['confirmed','processing','ready_to_ship','shipped','delivered','completed','cancelled'].forEach(function(s){ %>
+            <option value="<%= s %>"><%= statusLabel(s) %></option><% }) %></select></div>
+          <div class="field"><input name="tracking_no" placeholder="کد رهگیری (در صورت ارسال)"></div>
+          <div class="field"><input name="note" placeholder="یادداشت"></div>
+          <button class="btn btn-ghost btn-block btn-sm">به‌روزرسانی</button>
+        </form>
+      </div>
+      <% if (!dispute) { %>
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:12px">ثبت اختلاف</b>
+        <form method="post" action="/orders/<%= o.id %>/dispute">
+          <div class="field"><textarea name="claim" required placeholder="شرح مشکل…" style="min-height:80px"></textarea></div>
+          <button class="btn btn-danger btn-block btn-sm">ثبت اختلاف</button></form>
+      </div>
+      <% } else { %><div class="panel" style="margin-top:18px"><div class="badge err">اختلاف باز — <%= dispute.status %></div>
+        <p class="small" style="margin-top:8px"><%= dispute.claim %></p></div><% } %>
+    </aside>
+  </div>
+</div></div>

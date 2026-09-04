@@ -1,0 +1,202 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <div class="row-between" style="margin-bottom:16px">
+    <div><span class="eyebrow">LISTING WIZARD</span><h1 style="margin:0;font-size:26px">ثبت / ویرایش کالا</h1></div>
+    <a class="btn btn-ghost btn-sm" href="/sell">کالاهای من</a>
+  </div>
+
+  <div class="progress" style="margin-bottom:14px"><i style="width:<%= Math.round(step/STEPS*100) %>%"></i></div>
+  <div class="stepper">
+    <% ['دسته‌بندی','نوع و مبدأ','ارزش تجاری','تصاویر','توضیحات','مشخصات','بازبینی'].forEach(function(nm,i){ %>
+      <a class="step <%= step===i+1?'on':'' %> <%= l.wizard_step > i+1 ? 'done':'' %>" href="/sell/<%= l.id %>/wizard/<%= i+1 %>">
+        <span class="n">STEP <%= i+1 %></span><%= nm %></a>
+    <% }) %>
+  </div>
+
+  <form method="post" action="/sell/<%= l.id %>/wizard/<%= step %>" enctype="multipart/form-data"
+        class="panel" data-autosave="listing-<%= l.id %>-<%= step %>">
+
+  <% if (step === 1) { %>
+    <h3>مرحله ۱ — دسته‌بندی و عنوان</h3>
+    <div class="field"><label class="req">نام کالا</label>
+      <input name="title" value="<%= l.title||'' %>" required placeholder="مثال: پسته اکبری درجه یک صادراتی">
+      <div class="hint">عنوان دقیق و تجاری بنویسید؛ در جستجو مؤثر است.</div></div>
+    <div class="field"><label class="req">دسته‌بندی</label>
+      <select name="category_id" required>
+        <option value="">— انتخاب کنید —</option>
+        <% allCats.forEach(function(c){ %>
+          <option value="<%= c.id %>" <%= l.category_id===c.id?'selected':'' %>>
+            <%= c.parent_name ? c.parent_name + ' › ' : '' %><%= pick(c,'name') %></option>
+        <% }) %>
+      </select></div>
+    <div class="field"><label>نوع معامله</label>
+      <select name="listing_type">
+        <% [['wholesale','عمده‌فروشی'],['retail','خرده‌فروشی'],['service','خدمات'],['export','صادرات']].forEach(function(x){ %>
+          <option value="<%= x[0] %>" <%= l.listing_type===x[0]?'selected':'' %>><%= x[1] %></option><% }) %>
+      </select></div>
+
+  <% } else if (step === 2) { %>
+    <h3>مرحله ۲ — نوع محصول و مبدأ</h3>
+    <div class="field"><label>نوع / واریته / گرید</label>
+      <input name="variety" value="<%= l.variety||'' %>" placeholder="مثال: اکبری، فندقی، احمدآقایی">
+      <div class="hint">دقیق‌ترین نوع تجاری محصول را بنویسید.</div></div>
+    <div class="grid g3">
+      <div class="field"><label>کشور مبدأ</label>
+        <select name="origin_country"><option value="">—</option>
+          <% countries.forEach(function(c){ %><option value="<%= c.code %>" <%= l.origin_country===c.code?'selected':'' %>><%= pick(c,'name') %></option><% }) %></select></div>
+      <div class="field"><label>استان</label><input name="origin_province" value="<%= l.origin_province||'' %>"></div>
+      <div class="field"><label>شهر</label><input name="origin_city" value="<%= l.origin_city||'' %>"></div>
+    </div>
+    <div class="field"><label>واحد اندازه‌گیری اصلی</label>
+      <select name="measure_unit"><option value="">—</option>
+        <% units.forEach(function(u){ %><option value="<%= u.code %>" <%= l.measure_unit===u.code?'selected':'' %>><%= pick(u,'name') %> (<%= u.code %>)</option><% }) %></select></div>
+
+  <% } else if (step === 3) { %>
+    <h3>مرحله ۳ — مقادیر تجاری</h3>
+    <fieldset><legend>موجودی</legend>
+      <div class="grid g3">
+        <div class="field"><label class="req">میزان موجودی</label><input type="number" step="any" name="inventory" value="<%= l.inventory||'' %>" required></div>
+        <div class="field"><label>واحد موجودی</label><select name="inventory_unit"><option value="">—</option>
+          <% units.forEach(function(u){ %><option value="<%= u.code %>" <%= l.inventory_unit===u.code?'selected':'' %>><%= pick(u,'name') %></option><% }) %></select></div>
+        <div class="field"><label>آستانه هشدار کمبود</label><input type="number" step="any" name="low_stock_threshold" value="<%= l.low_stock_threshold||'' %>"></div>
+      </div>
+    </fieldset>
+    <fieldset><legend>حداقل سفارش</legend>
+      <div class="grid g2">
+        <div class="field"><label>حداقل میزان فروش (MOQ)</label><input type="number" step="any" name="moq" value="<%= l.moq||'' %>"></div>
+        <div class="field"><label>واحد MOQ</label><select name="moq_unit"><option value="">—</option>
+          <% units.forEach(function(u){ %><option value="<%= u.code %>" <%= l.moq_unit===u.code?'selected':'' %>><%= pick(u,'name') %></option><% }) %></select></div>
+      </div>
+    </fieldset>
+    <fieldset><legend>قیمت</legend>
+      <div class="grid g3">
+        <div class="field"><label class="req">حداقل قیمت</label><input type="number" step="any" name="price" value="<%= l.price||'' %>"></div>
+        <div class="field"><label>ارز</label><select name="currency">
+          <% currencies.forEach(function(c){ %><option value="<%= c.code %>" <%= l.currency===c.code?'selected':'' %>><%= c.code %> (<%= c.symbol %>)</option><% }) %></select></div>
+        <div class="field"><label>واحد قیمت</label><select name="price_unit"><option value="">—</option>
+          <% units.forEach(function(u){ %><option value="<%= u.code %>" <%= l.price_unit===u.code?'selected':'' %>>هر <%= pick(u,'name') %></option><% }) %></select></div>
+      </div>
+      <div class="grid g2">
+        <div class="field"><label>قیمت خرده‌فروشی</label><input type="number" step="any" name="retail_price" value="<%= l.retail_price||'' %>"></div>
+        <div class="field"><label>قیمت عمده‌فروشی</label><input type="number" step="any" name="wholesale_price" value="<%= l.wholesale_price||'' %>"></div>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" name="negotiable" value="1" <%= l.negotiable?'checked':'' %>><span>قابل مذاکره</span></label>
+        <label class="check"><input type="checkbox" name="price_on_request" value="1" <%= l.price_on_request?'checked':'' %>><span>قیمت بر اساس استعلام</span></label>
+      </div>
+      <div style="margin-top:14px"><label class="lbl">قیمت پلکانی (Tier pricing)</label>
+        <% for (let i=0;i<3;i++) { let tp=[]; try{tp=JSON.parse(l.tier_pricing||'[]')}catch(e){} %>
+        <div class="input-group" style="margin-bottom:7px">
+          <input type="number" name="tier_from" placeholder="از تعداد" value="<%= tp[i]?tp[i].from:'' %>">
+          <input type="number" step="any" name="tier_price" placeholder="قیمت واحد" value="<%= tp[i]?tp[i].price:'' %>">
+        </div><% } %>
+      </div>
+    </fieldset>
+    <div class="grid g3">
+      <div class="field"><label>حالت مالیات</label><select name="tax_mode">
+        <% [['excluded','بدون مالیات'],['included','شامل مالیات'],['exempt','معاف']].forEach(function(x){ %>
+        <option value="<%= x[0] %>" <%= l.tax_mode===x[0]?'selected':'' %>><%= x[1] %></option><% }) %></select></div>
+      <div class="field"><label>زمان آماده‌سازی (روز)</label><input type="number" name="lead_time_days" value="<%= l.lead_time_days||'' %>"></div>
+      <div class="field"><label>وضعیت موجودی</label><select name="availability">
+        <% [['in_stock','موجود'],['made_to_order','تولید به سفارش'],['pre_order','پیش‌سفارش'],['sold_out','اتمام موجودی']].forEach(function(x){ %>
+        <option value="<%= x[0] %>" <%= l.availability===x[0]?'selected':'' %>><%= x[1] %></option><% }) %></select></div>
+    </div>
+
+  <% } else if (step === 4) { %>
+    <h3>مرحله ۴ — تصاویر و رسانه</h3>
+    <div class="alert info">حداکثر ۱۰ فایل، هر فایل تا ۸ مگابایت. فرمت: JPG, PNG, WEBP, PDF. تصویر باید فقط خود کالا را نشان دهد.</div>
+    <% if (media.length) { %>
+    <div class="grid g5" style="margin-bottom:18px">
+      <% media.forEach(function(m){ %>
+      <div class="card" style="position:relative">
+        <% if(m.kind==='image'){ %><img src="<%= m.path %>" style="aspect-ratio:1;object-fit:cover">
+        <% } else { %><div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px">📄</div><% } %>
+        <button formaction="/sell/<%= l.id %>/media/<%= m.id %>/delete" formmethod="post"
+          class="icon-btn" style="position:absolute;top:6px;inset-inline-end:6px;width:26px;height:26px;font-size:12px">✕</button>
+      </div><% }) %>
+    </div><% } %>
+    <div class="field"><label>افزودن تصویر</label><input type="file" name="images" multiple accept="image/*,application/pdf"></div>
+
+  <% } else if (step === 5) { %>
+    <h3>مرحله ۵ — توضیحات کالا</h3>
+    <div class="field"><label class="req">توضیحات</label>
+      <textarea name="description" required style="min-height:170px" placeholder="کیفیت، بسته‌بندی، شرایط ارسال، مزیت رقابتی…"><%= l.description||'' %></textarea></div>
+    <div class="grid g2">
+      <% [['quality','کیفیت'],['packaging','نوع بسته‌بندی'],['grade','گرید'],['freshness','تازگی'],
+          ['storage_method','روش نگهداری / ماندگاری'],['maintenance','روش مراقبت'],['dimensions','اندازه یا ابعاد'],
+          ['certifications','گواهی کیفی و سلامت']].forEach(function(x){ %>
+        <div class="field"><label><%= x[1] %></label><input name="<%= x[0] %>" value="<%= l[x[0]]||'' %>"></div>
+      <% }) %>
+    </div>
+    <div class="field"><label>مزایا نسبت به محصولات مشابه</label><textarea name="benefits"><%= l.benefits||'' %></textarea></div>
+    <div class="grid g2">
+      <div class="field"><label>شرایط پرداخت</label><input name="payment_terms" value="<%= l.payment_terms||'' %>" placeholder="TT 30%, LC at sight…"></div>
+      <div class="field"><label>شرایط تحویل</label><input name="delivery_terms" value="<%= l.delivery_terms||'' %>" placeholder="FOB Istanbul, CIF…"></div>
+    </div>
+    <div class="field"><label>یادداشت فروشنده</label><textarea name="seller_notes"><%= l.seller_notes||'' %></textarea></div>
+
+  <% } else if (step === 6) { %>
+    <h3>مرحله ۶ — مشخصات پویا دسته‌بندی</h3>
+    <% if (attrs.length) { %>
+      <div class="grid g2">
+      <% attrs.forEach(function(a){ let v = attrValues[a.akey]||''; %>
+        <div class="field"><label class="<%= a.required?'req':'' %>"><%= pick(a,'label') %><%= a.unit?' ('+a.unit+')':'' %></label>
+        <% if (a.data_type==='select') { %>
+          <select name="attr_<%= a.akey %>"><option value="">—</option>
+          <% JSON.parse(a.options||'[]').forEach(function(o){ %><option <%= v===o?'selected':'' %>><%= o %></option><% }) %></select>
+        <% } else if (a.data_type==='multiselect') { %>
+          <select name="attr_<%= a.akey %>" multiple size="4" style="min-height:100px">
+          <% JSON.parse(a.options||'[]').forEach(function(o){ %><option <%= v.includes(o)?'selected':'' %>><%= o %></option><% }) %></select>
+        <% } else if (a.data_type==='boolean') { %>
+          <select name="attr_<%= a.akey %>"><option value="">—</option><option value="بله" <%= v==='بله'?'selected':'' %>>بله</option><option value="خیر" <%= v==='خیر'?'selected':'' %>>خیر</option></select>
+        <% } else if (a.data_type==='textarea') { %>
+          <textarea name="attr_<%= a.akey %>"><%= v %></textarea>
+        <% } else { %>
+          <input type="<%= ['integer','decimal'].includes(a.data_type)?'number':(a.data_type==='date'?'date':'text') %>"
+                 step="any" name="attr_<%= a.akey %>" value="<%= v %>">
+        <% } %>
+        </div>
+      <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><div class="ic">🧩</div>برای این دسته‌بندی مشخصه‌ای تعریف نشده است. مدیر می‌تواند از پنل مدیریت اضافه کند.</div>
+    <% } %>
+
+  <% } else { %>
+    <h3>مرحله ۷ — بازبینی و ارسال</h3>
+    <div class="alert warn">پس از ارسال، آگهی توسط تیم بررسی می‌شود و پس از تأیید منتشر می‌گردد.</div>
+    <div class="grid g2">
+      <div class="card card-pad">
+        <b>خلاصه آگهی</b>
+        <dl class="kv small" style="margin-top:12px">
+          <dt>عنوان</dt><dd><%= l.title %></dd>
+          <dt>دسته‌بندی</dt><dd><%= cat ? pick(cat,'name') : '—' %></dd>
+          <dt>نوع معامله</dt><dd><%= l.listing_type %></dd>
+          <dt>واریته</dt><dd><%= l.variety||'—' %></dd>
+          <dt>مبدأ</dt><dd><%= [l.origin_city,l.origin_province,l.origin_country].filter(Boolean).join('، ')||'—' %></dd>
+          <dt>قیمت</dt><dd><%= l.price_on_request ? 'استعلامی' : money(l.price,l.currency) %></dd>
+          <dt>موجودی</dt><dd><%= num(l.inventory) %> <%= l.inventory_unit||'' %></dd>
+          <dt>MOQ</dt><dd><%= num(l.moq) %> <%= l.moq_unit||'' %></dd>
+          <dt>تصاویر</dt><dd><%= num(media.length) %></dd>
+        </dl>
+      </div>
+      <div class="card card-pad">
+        <b>پیش‌نمایش</b>
+        <div style="margin-top:12px">
+          <% if (media.length) { %><img src="<%= media[0].path %>" style="border-radius:var(--radius-sm);aspect-ratio:4/3;object-fit:cover"><% } %>
+          <div style="margin-top:10px"><b><%= l.title %></b><div class="gold big"><%= l.price_on_request?'استعلامی':money(l.price,l.currency) %></div></div>
+        </div>
+      </div>
+    </div>
+    <label class="check" style="margin-top:18px"><input type="checkbox" name="legal" required>
+      <span>صحت اطلاعات را تأیید می‌کنم و می‌پذیرم آگهی مغایر با قوانین حذف شود.</span></label>
+  <% } %>
+
+    <div class="row-between" style="margin-top:26px;padding-top:18px;border-top:1px solid var(--line)">
+      <% if (step > 1) { %><a class="btn btn-ghost" href="/sell/<%= l.id %>/wizard/<%= step-1 %>">‹ <%= t('back') %></a><% } else { %><span></span><% } %>
+      <div class="row">
+        <a class="btn btn-soft" href="/sell">ذخیره پیش‌نویس</a>
+        <button class="btn btn-primary btn-lg"><%= step===STEPS ? 'ارسال برای بررسی' : t('next')+' ›' %></button>
+      </div>
+    </div>
+  </form>
+</div></div>

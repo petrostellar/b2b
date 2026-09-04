@@ -1,0 +1,28 @@
+{
+  "name": "mydan-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node start-prod.js",
+    "seed": "node src/db/seed.js",
+    "test": "node test/e2e.js",
+    "reset": "rm -f data/mydan.sqlite* && node src/db/seed.js",
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "MYDAN marketplace — mobile edition (pure-JS, runs on Android via Termux)",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "multer": "^2.3.0",
+    "node-sqlite3-wasm": "^0.8.60"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

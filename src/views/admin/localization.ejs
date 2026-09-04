@@ -1,0 +1,60 @@
+<h1>زبان، ارز و واحدها</h1>
+<div class="grid g2">
+  <div class="panel"><b style="display:block;margin-bottom:12px">زبان‌ها</b>
+    <div class="table-wrap"><table class="data"><thead><tr><th>کد</th><th>نام</th><th>جهت</th><th>فعال</th></tr></thead>
+      <tbody><% languages.forEach(function(l){ %><tr><td class="mono"><%= l.code %></td><td><%= l.native_name %></td>
+        <td><%= l.dir %></td><td><%= l.enabled?'✔':'—' %></td></tr><% }) %></tbody></table></div>
+    <form method="post" action="/admin/localization/language" style="margin-top:14px">
+      <div class="grid g2"><div class="field"><input name="code" placeholder="de" required></div>
+        <div class="field"><input name="name" placeholder="German" required></div>
+        <div class="field"><input name="native_name" placeholder="Deutsch"></div>
+        <div class="field"><select name="dir"><option value="ltr">LTR</option><option value="rtl">RTL</option></select></div></div>
+      <label class="check" style="margin-bottom:10px"><input type="checkbox" name="enabled" value="1" checked><span>فعال</span></label>
+      <button class="btn btn-ghost btn-block btn-sm">+ افزودن زبان</button></form>
+  </div>
+  <div class="panel"><b style="display:block;margin-bottom:12px">ارزها</b>
+    <div class="table-wrap"><table class="data"><thead><tr><th>کد</th><th>نماد</th><th>نرخ</th><th>فعال</th></tr></thead>
+      <tbody><% currencies.forEach(function(c){ %><tr><td class="mono"><%= c.code %></td><td><%= c.symbol %></td>
+        <td class="mono"><%= c.rate_to_base %></td><td><%= c.enabled?'✔':'—' %></td></tr><% }) %></tbody></table></div>
+    <form method="post" action="/admin/localization/currency" style="margin-top:14px">
+      <div class="grid g2"><div class="field"><input name="code" placeholder="AED" required></div>
+        <div class="field"><input name="symbol" placeholder="د.إ" required></div>
+        <div class="field"><input name="name" placeholder="UAE Dirham"></div>
+        <div class="field"><input name="rate_to_base" placeholder="9.2" type="number" step="any"></div></div>
+      <label class="check" style="margin-bottom:10px"><input type="checkbox" name="enabled" value="1" checked><span>فعال</span></label>
+      <button class="btn btn-ghost btn-block btn-sm">+ افزودن ارز</button></form>
+  </div>
+</div>
+<div class="grid g2" style="margin-top:20px">
+  <div class="panel"><b style="display:block;margin-bottom:12px">واحدها</b>
+    <div class="row" style="gap:6px;margin-bottom:12px"><% units.forEach(function(u){ %><span class="chip"><%= u.name_fa %> (<%= u.code %>)</span><% }) %></div>
+    <form method="post" action="/admin/localization/unit"><div class="grid g3">
+      <div class="field"><input name="code" placeholder="box" required></div>
+      <div class="field"><input name="name_fa" placeholder="جعبه" required></div>
+      <div class="field"><input name="name_en" placeholder="Box"></div>
+      <div class="field"><input name="name_tr" placeholder="Kutu"></div>
+      <div class="field"><input name="name_ar" placeholder="صندوق"></div>
+      <div class="field"><select name="kind"><% ['weight','count','volume','length','area'].forEach(function(k){ %><option><%= k %></option><% }) %></select></div>
+    </div><button class="btn btn-ghost btn-block btn-sm">+ افزودن واحد</button></form>
+  </div>
+  <div class="panel"><b style="display:block;margin-bottom:12px">ترجمه‌ها (DB overrides)</b>
+    <form method="post" action="/admin/localization/translation" class="grid g3">
+      <div class="field"><select name="locale"><% languages.forEach(function(l){ %><option value="<%= l.code %>"><%= l.code %></option><% }) %></select></div>
+      <div class="field"><input name="tkey" placeholder="hero_title" required></div>
+      <div class="field"><input name="value" placeholder="ترجمه" required></div>
+      <div style="grid-column:1/-1"><button class="btn btn-ghost btn-block btn-sm">ذخیره ترجمه</button></div>
+    </form>
+    <div class="table-wrap" style="margin-top:12px;max-height:240px;overflow:auto"><table class="data">
+      <tbody><% translations.forEach(function(t){ %><tr><td class="mono xs"><%= t.locale %></td><td class="xs"><%= t.tkey %></td><td class="small"><%= t.value %></td></tr><% }) %></tbody></table></div>
+  </div>
+</div>
+<div class="panel" style="margin-top:20px"><b style="display:block;margin-bottom:12px">کشورها (<%= num(countries.length) %>)</b>
+  <div class="row" style="gap:5px"><% countries.forEach(function(c){ %><span class="chip"><%= c.code %> <%= c.name_fa %></span><% }) %></div>
+  <form method="post" action="/admin/localization/country" class="grid g4" style="margin-top:14px">
+    <div class="field"><input name="code" placeholder="QA" required></div>
+    <div class="field"><input name="name_fa" placeholder="قطر" required></div>
+    <div class="field"><input name="name_en" placeholder="Qatar" required></div>
+    <div class="field"><input name="dial_code" placeholder="+974"></div>
+    <div style="grid-column:1/-1"><button class="btn btn-ghost btn-sm">+ افزودن کشور</button></div>
+  </form>
+</div>

@@ -1,0 +1,23 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>سبد خرید</h1>
+  <% if (items.length) { %>
+  <div class="split-r">
+    <div class="panel">
+      <% items.forEach(function(i){ %>
+      <div class="row" style="padding:14px 0;border-bottom:1px solid var(--line)">
+        <span class="avatar av-56" style="border-radius:10px"><% if(i.cover){ %><img src="<%= i.cover %>"><% } else { %>📦<% } %></span>
+        <div style="flex:1;min-width:0"><a href="/product/<%= i.slug||i.listing_id %>"><b class="small"><%= i.title %></b></a>
+          <div class="xs dim"><%= num(i.quantity) %> × <%= money(i.unit_price,i.currency) %></div></div>
+        <b class="mono"><%= money(i.quantity*i.unit_price, i.currency) %></b>
+        <form method="post" action="/cart/remove/<%= i.id %>"><button class="btn btn-soft btn-sm">✕</button></form>
+      </div><% }) %>
+    </div>
+    <aside class="panel sticky">
+      <dl class="kv"><dt>جمع کالاها</dt><dd class="mono"><%= money(subtotal) %></dd>
+      <dt>مالیات (۱۸٪)</dt><dd class="mono"><%= money(tax) %></dd>
+      <dt><b>مبلغ نهایی</b></dt><dd class="mono gold bold"><%= money(total) %></dd></dl>
+      <a class="btn btn-primary btn-block btn-lg" style="margin-top:16px" href="/checkout">ادامه تسویه حساب</a>
+    </aside>
+  </div>
+  <% } else { %><div class="empty-state"><div class="ic">🛒</div>سبد خرید خالی است.<div><a class="btn btn-primary" style="margin-top:14px" href="/products">مشاهده کالاها</a></div></div><% } %>
+</div></div>

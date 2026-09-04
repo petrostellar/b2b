@@ -1,0 +1,38 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <h1>تسویه حساب</h1>
+  <form method="post" class="split-r">
+    <div class="panel">
+      <fieldset><legend>اطلاعات تحویل</legend>
+        <div class="grid g2">
+          <div class="field"><label class="req">نام گیرنده</label><input name="ship_name" required></div>
+          <div class="field"><label class="req">تلفن</label><input name="ship_phone" required></div>
+        </div>
+        <div class="grid g2">
+          <div class="field"><label>کشور</label><select name="ship_country"><% countries.forEach(function(c){ %><option value="<%= c.code %>"><%= pick(c,'name') %></option><% }) %></select></div>
+          <div class="field"><label>شهر</label><input name="ship_city"></div>
+        </div>
+        <div class="field"><label>آدرس کامل</label><textarea name="ship_address"></textarea></div>
+      </fieldset>
+      <fieldset><legend>حمل و شرایط</legend>
+        <div class="grid g3">
+          <div class="field"><label>روش ارسال</label><select name="ship_method">
+            <% [['pickup','تحویل حضوری'],['courier','پیک'],['cargo','باربری'],['freight','فورواردر'],['air','هوایی'],['sea','دریایی']].forEach(function(x){ %>
+            <option value="<%= x[0] %>"><%= x[1] %></option><% }) %></select></div>
+          <div class="field"><label>اینکوترمز</label><select name="incoterm"><option value="">—</option>
+            <% ['EXW','FOB','CIF','DAP','DDP'].forEach(function(i){ %><option><%= i %></option><% }) %></select></div>
+          <div class="field"><label>شماره PO</label><input name="po_reference"></div>
+        </div>
+      </fieldset>
+    </div>
+    <aside class="panel sticky">
+      <b style="display:block;margin-bottom:12px">خلاصه سفارش</b>
+      <% items.forEach(function(i){ %><div class="row-between small" style="padding:6px 0"><span class="truncate"><%= i.title %> ×<%= num(i.quantity) %></span><span class="mono"><%= money(i.quantity*i.unit_price) %></span></div><% }) %>
+      <hr>
+      <dl class="kv"><dt>جمع</dt><dd class="mono"><%= money(subtotal) %></dd>
+        <dt>مالیات</dt><dd class="mono"><%= money(tax) %></dd>
+        <dt>حمل</dt><dd class="mono"><%= money(shipping) %></dd>
+        <dt><b>پرداختی</b></dt><dd class="mono gold bold"><%= money(total) %></dd></dl>
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:14px">ثبت سفارش و پرداخت</button>
+    </aside>
+  </form>
+</div></div>

@@ -1,0 +1,7 @@
+<nav class="mnav">
+  <a href="/suppliers" class="<%= path.startsWith('/suppliers')?'on':'' %>"><span class="ic">🏭</span><%= t('nav_suppliers') %></a>
+  <a href="/buy-requests" class="<%= path.startsWith('/buy-requests')?'on':'' %>"><span class="ic">📋</span><%= t('nav_requests') %></a>
+  <a href="/sell/new" class="mid"><span class="ic">＋</span></a>
+  <a href="/messages" class="<%= path.startsWith('/messages')?'on':'' %>"><span class="ic">✉</span><%= t('nav_messages') %></a>
+  <a href="/account" class="<%= path.startsWith('/account')?'on':'' %>"><span class="ic">👤</span><%= t('nav_account') %></a>
+</nav>

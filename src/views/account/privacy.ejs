@@ -1,0 +1,18 @@
+<div class="section-sm"><div class="wrap wrap-mid">
+  <span class="eyebrow">KVKK / GDPR</span><h1>مرکز حریم خصوصی</h1>
+  <div class="grid g3">
+    <a class="card card-pad card-hover" href="/account/export"><div style="font-size:24px">⬇</div><b>خروجی داده‌های من</b><div class="small dim">دریافت کامل داده‌ها به فرمت JSON</div></a>
+    <a class="card card-pad card-hover" href="/page/privacy"><div style="font-size:24px">📄</div><b>سیاست حریم خصوصی</b><div class="small dim">نسخه جاری سند</div></a>
+    <a class="card card-pad card-hover" href="/page/terms"><div style="font-size:24px">⚖</div><b>قوانین استفاده</b><div class="small dim">شرایط خدمات</div></a>
+  </div>
+  <div class="panel" style="margin-top:20px"><b style="display:block;margin-bottom:12px">تاریخچه رضایت‌ها</b>
+    <% consents.forEach(function(c){ %><div class="row-between small" style="padding:8px 0;border-top:1px solid var(--line)">
+      <span><%= c.purpose %></span><span class="badge <%= c.granted?'ok':'muted' %> xs"><%= c.granted?'داده شده':'لغو' %></span>
+      <span class="xs dim"><%= date(c.created_at) %> · <%= c.version %></span></div><% }) %>
+  </div>
+  <div class="panel" style="margin-top:20px;border-color:var(--err)">
+    <b class="err-text">حذف حساب</b>
+    <p class="small">داده‌های شخصی شما ناشناس‌سازی می‌شود. این عمل قابل بازگشت نیست.</p>
+    <form method="post" action="/account/delete" onsubmit="return confirm('آیا مطمئن هستید؟')"><button class="btn btn-danger">درخواست حذف حساب</button></form>
+  </div>
+</div></div>

@@ -1,0 +1,46 @@
+<div class="section"><div class="wrap" style="max-width:760px">
+  <span class="eyebrow">ONBOARDING</span>
+  <h1>تکمیل حساب کاربری</h1>
+  <p>برای شروع فعالیت، اطلاعات پایه و نقش خود را مشخص کنید. بعداً می‌توانید بین حالت خریدار و فروشنده جابه‌جا شوید.</p>
+  <form method="post" action="/auth/onboarding" class="panel" data-autosave="onboarding">
+    <div class="grid g2">
+      <div class="field"><label class="req">نام</label><input name="first_name" required></div>
+      <div class="field"><label class="req">نام خانوادگی</label><input name="last_name" required></div>
+    </div>
+    <div class="field"><label>ایمیل (اختیاری)</label><input type="email" name="email"></div>
+    <div class="grid g3">
+      <div class="field"><label>کشور</label>
+        <select name="country"><% countries.forEach(function(c){ %><option value="<%= c.code %>" <%= c.code==='TR'?'selected':'' %>><%= pick(c,'name') %></option><% }) %></select></div>
+      <div class="field"><label>استان</label><input name="province"></div>
+      <div class="field"><label>شهر</label><input name="city"></div>
+    </div>
+    <fieldset><legend>نوع فعالیت</legend>
+      <div class="grid g2">
+        <label class="card card-pad" style="cursor:pointer;display:block">
+          <div class="row"><input type="radio" name="mode" value="buyer" checked style="width:18px;min-height:0">
+          <b>خریدارم</b></div>
+          <div class="small dim" style="margin-top:6px">ثبت درخواست خرید، دریافت پیش‌فاکتور، مذاکره و سفارش.</div>
+        </label>
+        <label class="card card-pad" style="cursor:pointer;display:block">
+          <div class="row"><input type="radio" name="mode" value="seller" style="width:18px;min-height:0">
+          <b>فروشنده‌ام</b></div>
+          <div class="small dim" style="margin-top:6px">ثبت کالا، مدیریت موجودی و قیمت، پاسخ به درخواست خریداران.</div>
+        </label>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="field"><label>نوع کسب‌وکار</label>
+          <select name="seller_type">
+            <option value="">—</option>
+            <% [['manufacturer','تولیدکننده'],['distributor','توزیع‌کننده'],['wholesaler','عمده‌فروش'],['retailer','خرده‌فروش'],['exporter','صادرکننده'],['importer','واردکننده'],['service','ارائه‌دهنده خدمات']].forEach(function(x){ %>
+            <option value="<%= x[0] %>"><%= x[1] %></option><% }) %>
+          </select></div>
+        <div class="field"><label>حوزه اصلی</label>
+          <select name="category_id"><option value="">—</option>
+            <% cats.forEach(function(c){ %><option value="<%= c.id %>"><%= pick(c,'name') %></option><% }) %></select></div>
+      </div>
+    </fieldset>
+    <label class="check"><input type="checkbox" name="terms" required><span>قوانین استفاده و سیاست حریم خصوصی را می‌پذیرم.</span></label>
+    <label class="check" style="margin-top:10px"><input type="checkbox" name="marketing"><span>دریافت پیشنهادها و اخبار تجاری.</span></label>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top:20px">ثبت و ورود به میدان</button>
+  </form>
+</div></div>

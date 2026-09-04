@@ -1,0 +1,95 @@
+<div class="section-sm"><div class="wrap">
+  <div class="row-between" style="margin-bottom:20px">
+    <div><span class="eyebrow">SELLER CONSOLE</span><h1 style="margin:0">داشبورد فروشنده</h1></div>
+    <div class="row">
+      <form method="post" action="/auth/mode"><input type="hidden" name="mode" value="<%= user.active_mode==='seller'?'buyer':'seller' %>">
+        <button class="btn btn-ghost btn-sm">↔ تغییر به حالت <%= user.active_mode==='seller'?'خریدار':'فروشنده' %></button></form>
+      <a class="btn btn-primary" href="/sell/new">+ ثبت کالای جدید</a>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:20px">
+    <% [['کالاهای فعال',kpis.listings,'/sell?tab=approved'],['در انتظار بررسی',kpis.pending,'/sell?tab=pending'],
+        ['بازدید امروز',kpis.viewsToday,'#'],['بازدید ۷ روز',kpis.views7,'#'],
+        ['پیش‌فاکتورها',kpis.quotes,'/quotes'],['سفارش‌ها',kpis.orders,'/orders'],
+        ['پیام نخوانده',kpis.unread,'/messages']].slice(0,4).forEach(function(x){ %>
+    <a class="stat-card card-hover anim" href="<%= x[2] %>"><div class="v mono"><%= num(x[1]) %></div><div class="k"><%= x[0] %></div></a>
+    <% }) %>
+  </div>
+  <div class="grid g4" style="margin-bottom:24px">
+    <a class="stat-card card-hover" href="/quotes"><div class="v mono"><%= num(kpis.quotes) %></div><div class="k">پیش‌فاکتورها</div></a>
+    <a class="stat-card card-hover" href="/orders"><div class="v mono"><%= num(kpis.orders) %></div><div class="k">سفارش‌ها</div></a>
+    <a class="stat-card card-hover" href="/messages"><div class="v mono"><%= num(kpis.unread) %></div><div class="k">پیام نخوانده</div></a>
+    <div class="stat-card"><div class="v mono gold"><%= money(kpis.revenue) %></div><div class="k">فروش پرداخت‌شده</div></div>
+  </div>
+
+  <div class="split-r">
+    <div>
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">بازدید ۱۴ روز اخیر</h3><a href="/sell" class="small gold">کالاهای من →</a></div>
+        <% var mx = Math.max(1, ...chart.map(function(c){return c.c})); %>
+        <div class="bars">
+          <% if (chart.length) { chart.forEach(function(c){ %>
+            <div style="height:<%= Math.round(c.c/mx*100) %>%" title="<%= c.day %>: <%= c.c %>"><span><%= c.day.slice(5) %></span></div>
+          <% })} else { %><div class="dim small">داده‌ای ثبت نشده است.</div><% } %>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-head"><h3 style="margin:0">آخرین کالاها</h3><a href="/sell" class="small gold">همه →</a></div>
+        <div class="table-wrap"><table class="data">
+          <thead><tr><th>کالا</th><th>قیمت</th><th>موجودی</th><th>وضعیت</th><th></th></tr></thead>
+          <tbody><% recent.forEach(function(l){ %>
+            <tr><td><a href="/product/<%= l.slug||l.id %>" class="row"><span class="avatar av-32" style="border-radius:8px"><% if(l.cover){ %><img src="<%= l.cover %>"><% } else { %>📦<% } %></span><span class="truncate" style="max-width:220px"><%= l.title||'(بدون عنوان)' %></span></a></td>
+            <td class="mono"><%= money(l.price,l.currency) %></td><td class="mono"><%= num(l.inventory) %></td>
+            <td><span class="badge <%= tone(l.status) %>"><%= statusLabel(l.status) %></span></td>
+            <td><a class="btn btn-soft btn-sm" href="/sell/<%= l.id %>/analytics">📊</a></td></tr>
+          <% }) %></tbody></table></div>
+        <% if(!recent.length){ %><div class="empty-state"><div class="ic">📦</div>هنوز کالایی ثبت نکرده‌اید.<br><a class="btn btn-primary" style="margin-top:14px" href="/sell/new">ثبت اولین کالا</a></div><% } %>
+      </div>
+
+      <% if (matches.length) { %>
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-head"><h3 style="margin:0">درخواست‌های خرید مرتبط با شما</h3><a href="/buy-requests" class="small gold">همه →</a></div>
+        <% matches.forEach(function(b){ %>
+        <a href="/buy-requests/<%= b.id %>" class="row-between" style="padding:11px 0;border-bottom:1px solid var(--line)">
+          <div><b class="small"><%= b.title %></b><div class="xs dim"><%= b.buyer_name %> · <%= num(b.quantity) %> <%= b.unit||'' %></div></div>
+          <span class="btn btn-soft btn-sm">ارسال پیشنهاد</span></a>
+        <% }) %>
+      </div><% } %>
+    </div>
+
+    <aside class="sticky">
+      <div class="panel">
+        <div class="row-between" style="margin-bottom:10px"><b>تکمیل پروفایل</b><span class="gold bold"><%= completion.score %>%</span></div>
+        <div class="progress"><i style="width:<%= completion.score %>%"></i></div>
+        <div class="badge <%= completion.level==='excellent'?'ok':(completion.level==='good'?'info':'warn') %>" style="margin:10px 0">
+          سطح: <%= {weak:'ضعیف',medium:'متوسط',good:'خوب',excellent:'عالی'}[completion.level] %></div>
+        <% completion.steps.forEach(function(s){ %>
+        <a href="<%= s.link %>" class="row-between small" style="padding:7px 0;border-top:1px solid var(--line)">
+          <span><%= s.done?'✅':'⬜' %> <%= s.label_fa %></span><span class="dim xs">+<%= s.weight %>%</span></a>
+        <% }) %>
+      </div>
+
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:10px">عضویت</b>
+        <% if (sub) { %>
+          <div class="badge gold">★ <%= pick(sub,'name') %></div>
+          <div class="small dim" style="margin-top:8px">تا <%= date(sub.ends_at) %></div>
+        <% } else { %>
+          <p class="small">با عضویت ویژه به شماره تماس خریداران، رتبه بالاتر و آمار پیشرفته دسترسی پیدا کنید.</p>
+          <a class="btn btn-primary btn-block btn-sm" href="/pricing">ارتقا عضویت</a>
+        <% } %>
+      </div>
+
+      <div class="panel" style="margin-top:18px">
+        <b style="display:block;margin-bottom:10px">اعلان‌ها</b>
+        <% notifs.forEach(function(n){ %>
+          <a href="<%= n.link||'#' %>" style="display:block;padding:8px 0;border-top:1px solid var(--line)">
+            <div class="small bold"><%= n.title %></div><div class="xs dim clamp2"><%= n.body %></div></a>
+        <% }) %>
+        <% if(!notifs.length){ %><div class="small dim">اعلانی وجود ندارد.</div><% } %>
+      </div>
+    </aside>
+  </div>
+</div></div>

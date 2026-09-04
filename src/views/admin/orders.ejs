@@ -1,0 +1,15 @@
+<div class="row-between"><h1>سفارش‌ها و پرداخت‌ها</h1><span class="badge gold">GMV: <%= money(gmv) %></span></div>
+<div class="table-wrap" style="margin-top:16px"><table class="data">
+  <thead><tr><th>شماره</th><th>خریدار</th><th>فروشنده</th><th>مبلغ</th><th>پرداخت</th><th>وضعیت</th><th></th></tr></thead>
+  <tbody><% rows.forEach(function(o){ %><tr><td class="mono"><%= o.order_no %></td><td class="small"><%= o.buyer %></td>
+    <td class="small"><%= o.seller||'—' %></td><td class="mono gold"><%= money(o.total,o.currency) %></td>
+    <td><span class="badge <%= o.payment_status==='paid'?'ok':'warn' %> xs"><%= o.payment_status %></span></td>
+    <td><span class="badge <%= tone(o.status) %> xs"><%= statusLabel(o.status) %></span></td>
+    <td><a class="btn btn-soft btn-sm" href="/orders/<%= o.id %>">مشاهده</a></td></tr><% }) %></tbody></table></div>
+<h2 style="margin:24px 0 12px">تراکنش‌ها</h2>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>Idempotency Key</th><th>مبلغ</th><th>ارائه‌دهنده</th><th>مرجع</th><th>امانی</th><th>وضعیت</th></tr></thead>
+  <tbody><% payments.forEach(function(p){ %><tr><td class="xs mono"><%= p.idempotency_key %></td>
+    <td class="mono"><%= money(p.amount_minor/100,p.currency) %></td><td><%= p.provider %></td>
+    <td class="xs mono dim"><%= p.provider_ref||'—' %></td><td><%= p.escrow?'🔒':'—' %></td>
+    <td><span class="badge <%= tone(p.status) %> xs"><%= p.status %></span></td></tr><% }) %></tbody></table></div>

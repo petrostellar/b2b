@@ -1,0 +1,18 @@
+<div class="section"><div class="wrap" style="max-width:460px">
+  <div class="panel center">
+    <div style="font-size:44px">🔐</div>
+    <h2>کد تأیید</h2>
+    <p class="small">کد ۶ رقمی ارسال‌شده به <b dir="ltr"><%= phone %></b> را وارد کنید.</p>
+    <% if (devOtp) { %><div class="alert info">حالت توسعه — کد شما: <b class="mono" style="font-size:20px;letter-spacing:4px"><%= devOtp %></b></div><% } %>
+    <form method="post" action="/auth/otp/verify">
+      <input class="mono center" name="code" inputmode="numeric" maxlength="6" required
+             style="font-size:26px;letter-spacing:10px;height:60px;text-align:center" placeholder="––––––">
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:16px">تأیید و ورود</button>
+    </form>
+    <div class="row" style="justify-content:center;margin-top:16px">
+      <form method="post" action="/auth/otp/request"><input type="hidden" name="phone" value="<%= phone %>">
+        <button class="btn btn-soft btn-sm">ارسال مجدد کد</button></form>
+      <a class="btn btn-soft btn-sm" href="/auth/login">ویرایش شماره</a>
+    </div>
+  </div>
+</div></div>

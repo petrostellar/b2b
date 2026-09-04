@@ -1,0 +1,12 @@
+<h1>درخواست‌های خرید</h1>
+<div class="tabs"><% ['pending_review','approved','rejected','awarded','closed'].forEach(function(s){ %>
+  <a href="/admin/requests?status=<%= s %>" class="<%= st===s?'on':'' %>"><%= statusLabel(s) %><span class="count">(<%= num(counts[s]) %>)</span></a><% }) %></div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>عنوان</th><th>خریدار</th><th>مقدار</th><th>قیمت هدف</th><th>عملیات</th></tr></thead>
+  <tbody><% rows.forEach(function(b){ %><tr><td><a href="/buy-requests/<%= b.id %>" class="small"><%= b.title %></a></td>
+    <td class="small"><%= b.buyer %></td><td class="mono"><%= num(b.quantity) %> <%= b.unit||'' %></td>
+    <td class="mono"><%= b.target_price?money(b.target_price,b.currency):'—' %></td>
+    <td><form method="post" action="/admin/requests/<%= b.id %>/moderate" class="row" style="gap:4px">
+      <input name="reason" placeholder="دلیل" style="min-height:31px;height:31px;font-size:12px;max-width:140px">
+      <button name="decision" value="approved" class="btn btn-ok btn-sm">✓</button>
+      <button name="decision" value="rejected" class="btn btn-danger btn-sm">✕</button></form></td></tr><% }) %></tbody></table></div>

@@ -1,0 +1,38 @@
+<div class="row-between"><h1>داشبورد مدیریت</h1><span class="small dim"><%= date(new Date().toISOString()) %></span></div>
+<div class="grid g4" style="margin:20px 0">
+  <% [['کاربران',kpis.users,'/admin/users'],['کاربران جدید (۷ روز)',kpis.newUsers,'/admin/users'],
+      ['آگهی‌ها',kpis.listings,'/admin/listings'],['در صف بررسی',kpis.pendingListings,'/admin/listings?status=pending_review']].forEach(function(x){ %>
+  <a class="stat-card card-hover" href="<%= x[2] %>"><div class="v mono"><%= num(x[1]) %></div><div class="k"><%= x[0] %></div></a><% }) %>
+</div>
+<div class="grid g4" style="margin-bottom:20px">
+  <a class="stat-card card-hover" href="/admin/kyc"><div class="v mono <%= kpis.kyc?'gold':'' %>"><%= num(kpis.kyc) %></div><div class="k">KYC در صف</div></a>
+  <a class="stat-card card-hover" href="/admin/requests"><div class="v mono"><%= num(kpis.pendingRequests) %></div><div class="k">RFQ در صف</div></a>
+  <a class="stat-card card-hover" href="/admin/moderation"><div class="v mono"><%= num(kpis.reports) %></div><div class="k">گزارش باز</div></a>
+  <a class="stat-card card-hover" href="/admin/support"><div class="v mono"><%= num(kpis.tickets) %></div><div class="k">تیکت باز</div></a>
+</div>
+<div class="grid g4" style="margin-bottom:24px">
+  <a class="stat-card card-hover" href="/admin/orders"><div class="v mono"><%= num(kpis.orders) %></div><div class="k">سفارش‌ها</div></a>
+  <div class="stat-card"><div class="v mono gold"><%= money(kpis.gmv) %></div><div class="k">GMV پرداخت‌شده</div></div>
+  <a class="stat-card card-hover" href="/admin/plans"><div class="v mono"><%= num(kpis.subs) %></div><div class="k">عضویت فعال</div></a>
+  <a class="stat-card card-hover" href="/admin/requests"><div class="v mono"><%= num(kpis.requests) %></div><div class="k">کل RFQ</div></a>
+</div>
+<div class="grid g2">
+  <div class="panel"><b style="display:block;margin-bottom:12px">ثبت‌نام ۱۴ روز اخیر</b>
+    <% var m1=Math.max(1,...chart.map(function(c){return c.c})); %>
+    <div class="bars"><% chart.forEach(function(c){ %><div style="height:<%= Math.round(c.c/m1*100) %>%"><span><%= c.d.slice(5) %></span></div><% }) %></div>
+  </div>
+  <div class="panel"><b style="display:block;margin-bottom:12px">آگهی‌های جدید ۱۴ روز</b>
+    <% var m2=Math.max(1,...listingChart.map(function(c){return c.c})); %>
+    <div class="bars"><% listingChart.forEach(function(c){ %><div style="height:<%= Math.round(c.c/m2*100) %>%"><span><%= c.d.slice(5) %></span></div><% }) %></div>
+  </div>
+</div>
+<div class="panel" style="margin-top:20px">
+  <div class="panel-head"><h3 style="margin:0">صف بررسی آگهی</h3><a href="/admin/listings" class="small gold">همه →</a></div>
+  <div class="table-wrap"><table class="data"><thead><tr><th>آگهی</th><th>فروشنده</th><th>قیمت</th><th>عملیات</th></tr></thead>
+  <tbody><% queue.forEach(function(l){ %><tr><td class="small"><a href="/product/<%= l.slug||l.id %>"><%= l.title %></a></td>
+    <td class="small"><%= l.seller %></td><td class="mono"><%= money(l.price,l.currency) %></td>
+    <td><form method="post" action="/admin/listings/<%= l.id %>/moderate" class="row" style="gap:4px">
+      <button name="decision" value="approved" class="btn btn-ok btn-sm">تأیید</button>
+      <button name="decision" value="rejected" class="btn btn-danger btn-sm">رد</button></form></td></tr><% }) %></tbody></table></div>
+  <% if(!queue.length){ %><div class="small dim">صف خالی است ✓</div><% } %>
+</div>

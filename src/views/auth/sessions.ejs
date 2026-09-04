@@ -1,0 +1,11 @@
+<div class="section"><div class="wrap wrap-mid">
+  <h1>نشست‌ها و امنیت</h1>
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>رویداد</th><th>IP</th><th>دستگاه</th><th>زمان</th></tr></thead>
+    <tbody><% logs.forEach(function(l){ %>
+      <tr><td><span class="badge <%= l.event==='login'?'ok':(l.event==='login_fail'?'err':'muted') %>"><%= l.event %></span></td>
+      <td class="mono"><%= l.ip %></td><td class="small dim truncate" style="max-width:340px"><%= l.user_agent %></td>
+      <td class="small"><%= date(l.created_at) %></td></tr>
+    <% }) %></tbody></table></div>
+  <form method="post" action="/auth/logout" style="margin-top:20px"><button class="btn btn-danger">خروج از حساب</button></form>
+</div></div>
