@@ -268,6 +268,9 @@ CREATE TABLE IF NOT EXISTS buy_requests (
   buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   category_id INTEGER REFERENCES categories(id),
   title TEXT NOT NULL,
+  -- Per-locale overrides; `title`/`description` remain the authoring values.
+  title_fa TEXT, title_en TEXT, title_tr TEXT, title_ar TEXT,
+  description_fa TEXT, description_en TEXT, description_tr TEXT, description_ar TEXT,
   variety TEXT,
   quantity REAL, unit TEXT,
   wholesale_experience INTEGER DEFAULT 0,
@@ -383,6 +386,18 @@ CREATE TABLE IF NOT EXISTS stories (
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   media_path TEXT, media_kind TEXT DEFAULT 'image',
   caption TEXT,
+  caption_fa TEXT, caption_en TEXT, caption_tr TEXT, caption_ar TEXT,
+  -- VIP hero-banner promotion. A seller pays to have their story rendered as the big
+  -- banner at the top of the homepage; admin approves and sets the window/price.
+  is_vip INTEGER DEFAULT 0,
+  vip_status TEXT DEFAULT 'none',      -- none|pending|active|rejected|expired
+  vip_starts_at TEXT, vip_ends_at TEXT,
+  vip_price_minor INTEGER DEFAULT 0,
+  vip_currency TEXT DEFAULT 'TRY',
+  vip_paid INTEGER DEFAULT 0,
+  vip_sort INTEGER DEFAULT 0,
+  vip_headline TEXT, vip_subtext TEXT, vip_image TEXT, vip_link TEXT,
+  vip_impressions INTEGER DEFAULT 0, vip_clicks INTEGER DEFAULT 0,
   cta_label TEXT, cta_type TEXT, cta_target_id INTEGER,
   status TEXT DEFAULT 'active', -- active|expired|removed|pending
   expires_at TEXT,
@@ -541,6 +556,7 @@ CREATE TABLE IF NOT EXISTS ad_campaigns (
   target_category_id INTEGER, target_country TEXT, target_locale TEXT,
   budget_minor INTEGER, model TEXT DEFAULT 'flat', -- cpc|cpm|flat
   image TEXT, headline TEXT, subtext TEXT, link_url TEXT,
+  headline_fa TEXT, headline_en TEXT, subtext_fa TEXT, subtext_en TEXT,
   starts_at TEXT, ends_at TEXT,
   status TEXT DEFAULT 'pending', -- pending|active|paused|finished|rejected
   impressions INTEGER DEFAULT 0, clicks INTEGER DEFAULT 0,

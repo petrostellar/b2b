@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const { db, q, migrate } = require('./index');
 const { THEMES, THEME_CODES } = require('../lib/themes');
 const H = require('../lib/helpers');
-const { LISTING_TITLES, BLOG_TITLES } = require('./translations');
+const { LISTING_TITLES, BLOG_TITLES, REQUEST_TITLES, STORY_CAPTIONS, AD_COPY } = require('./translations');
 
 migrate();
 
@@ -722,6 +722,12 @@ RFQS.forEach((R) => {
   };
   const cols = Object.keys(data).filter((k) => rfqCols.includes(k));
   up(`INSERT INTO buy_requests (${cols.join(',')}) VALUES (${cols.map(() => '?').join(',')})`, cols.map((c) => data[c]));
+  const rtr = REQUEST_TITLES[data.title];
+  if (rtr) {
+    const row = q.get('SELECT id FROM buy_requests WHERE title=? ORDER BY id DESC LIMIT 1', [data.title]);
+    if (row) up('UPDATE buy_requests SET title_fa=?, title_en=?, title_ar=? WHERE id=?',
+      [rtr.fa || null, rtr.en || null, rtr.ar || null, row.id]);
+  }
 });
 
 const quoteCols = q.all('PRAGMA table_info(quotes)').map((c) => c.name);
@@ -874,7 +880,34 @@ const storyCols = q.all('PRAGMA table_info(stories)').map((c) => c.name);
     up(`INSERT INTO stories (user_id,media_kind,caption,cta_label,cta_type,status,expires_at,views_count)
         VALUES (?, 'text', ?, ?, 'profile', 'active', datetime('now','+7 days'), ?)`,
       [sellers[si].id, title + ' — ' + body, 'مشاهده غرفه', rnd(20, 600)]);
+    const cap = title + ' — ' + body;
+    const str = STORY_CAPTIONS[cap];
+    const row = q.get('SELECT id FROM stories WHERE caption=?', [cap]);
+    if (str && row) up('UPDATE stories SET caption_fa=?, caption_en=? WHERE id=?',
+      [str.fa || null, str.en || null, row.id]);
   });
+
+/* One approved VIP hero story so the paid-banner feature is visible out of the box,
+   plus one pending request so admins have something to review. */
+(() => {
+  const vip = q.get("SELECT id, user_id FROM stories WHERE caption LIKE 'برداشت زعفران%'");
+  if (vip) up(`UPDATE stories SET is_vip=1, vip_status='active', vip_paid=1,
+      vip_price_minor=150000, vip_currency='TRY', vip_sort=10,
+      vip_starts_at=date('now','-3 days'), vip_ends_at=date('now','+11 days'),
+      vip_headline=?, vip_subtext=?, vip_link=?, vip_image=?,
+      vip_impressions=?, vip_clicks=? WHERE id=?`,
+    ['زعفران سرگل برداشت جدید — مستقیم از مزرعه',
+     'اولین محموله فصل، گرید I با گواهی ایزو ۳۶۳۲. سفارش پیش از پایان مهر با قیمت ویژه.',
+     '/category/agri', '/img/p/saffron.jpg', rnd(4000, 9000), rnd(150, 400), vip.id]);
+
+  const pending = q.get("SELECT id FROM stories WHERE caption LIKE 'TOPCon%'");
+  if (pending) up(`UPDATE stories SET is_vip=1, vip_status='pending',
+      vip_price_minor=150000, vip_currency='TRY',
+      vip_headline=?, vip_subtext=?, vip_link=? WHERE id=?`,
+    ['TOPCon Bifacial — Ex-Stock Istanbul',
+     '2,400 modules ready for immediate delivery. Container pricing available.',
+     '/category/electronics', pending.id]);
+})();
 
 /* ---------------- ads ---------------- */
 [['Ramadan Sourcing Week', 'hero', 'هفته تأمین رمضان', 'تخفیف ویژه تأمین‌کنندگان تأییدشده روی خشکبار و مواد غذایی', '/category/agri'],
@@ -885,6 +918,10 @@ const storyCols = q.all('PRAGMA table_info(stories)').map((c) => c.name);
     up(`INSERT INTO ad_campaigns (owner_id,name,placement,budget_minor,model,headline,subtext,link_url,starts_at,ends_at,status,impressions,clicks)
         VALUES (?,?,?,?, 'flat',?,?,?, date('now','-10 days'), date('now','+40 days'), 'active', ?, ?)`,
       [sellers[i].id, name, placement, 250000, headline, subtext, link, rnd(2000, 40000), rnd(50, 900)]);
+    const ac = AD_COPY[name];
+    if (ac) up(`UPDATE ad_campaigns SET headline_fa=?, headline_en=?, subtext_fa=?, subtext_en=? WHERE name=?`,
+      [(ac.fa||{}).headline||null, (ac.en||{}).headline||null,
+       (ac.fa||{}).subtext||null, (ac.en||{}).subtext||null, name]);
   });
 
 /* ---------------- support / reports ---------------- */

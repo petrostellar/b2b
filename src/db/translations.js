@@ -122,4 +122,82 @@ const BLOG_TITLES = {
   },
 };
 
-module.exports = { LISTING_TITLES, BLOG_TITLES };
+
+/** Per-locale titles for seeded buy requests (RFQs), keyed by source title. */
+const REQUEST_TITLES = {
+  'خرید ۲۰۰ کیلوگرم زعفران سرگل گرید I برای بازار آلمان': {
+    fa: 'خرید ۲۰۰ کیلوگرم زعفران سرگل گرید I برای بازار آلمان',
+    en: 'Buying 200 kg Sargol Saffron Grade I for the German market',
+  },
+  'استعلام ۸۰۰۰ متر مربع تراورتن برای پروژه مسکونی بغداد': {
+    fa: 'استعلام ۸۰۰۰ متر مربع تراورتن برای پروژه مسکونی بغداد',
+    en: 'RFQ: 8,000 m² travertine for a residential project in Baghdad',
+  },
+  'خرید خط کامل خشک‌کن میوه با ظرفیت ۳۰۰ کیلوگرم در ساعت': {
+    fa: 'خرید خط کامل خشک‌کن میوه با ظرفیت ۳۰۰ کیلوگرم در ساعت',
+    en: 'Buying a complete fruit drying line, 300 kg/h capacity',
+  },
+  'Bulk order: 20,000 hotel bath towels 500-600 GSM': {
+    fa: 'سفارش عمده: ۲۰٬۰۰۰ حوله حمام هتلی ۵۰۰ تا ۶۰۰ گرمی',
+    en: 'Bulk order: 20,000 hotel bath towels 500-600 GSM',
+  },
+  'Handmade Tabriz carpets for German retail chain': {
+    fa: 'فرش دستباف تبریز برای زنجیره خرده‌فروشی آلمان',
+    en: 'Handmade Tabriz carpets for German retail chain',
+  },
+  'Annual contract: 40 MT pistachio kernels, EU aflatoxin compliant': {
+    fa: 'قرارداد سالانه: ۴۰ تن مغز پسته، منطبق با حد آفلاتوکسین اتحادیه اروپا',
+    en: 'Annual contract: 40 MT pistachio kernels, EU aflatoxin compliant',
+  },
+  'طلب عرض أسعار: 2 ميجاوات ألواح شمسية أحادية البلورة': {
+    fa: 'استعلام قیمت: ۲ مگاوات پنل خورشیدی مونوکریستال',
+    en: 'RFQ: 2 MW monocrystalline solar modules',
+    ar: 'طلب عرض أسعار: 2 ميجاوات ألواح شمسية أحادية البلورة',
+  },
+  'خرید ماهانه ۱۰۰ تن HDPE گرید تزریقی': {
+    fa: 'خرید ماهانه ۱۰۰ تن HDPE گرید تزریقی',
+    en: 'Monthly purchase: 100 MT injection-grade HDPE',
+  },
+};
+
+/** Per-locale captions for seeded stories, keyed by source caption. */
+const STORY_CAPTIONS = {
+  'برداشت زعفران پاییز ۱۴۰۴ آغاز شد — اولین محموله سرگل امروز وارد خط بسته‌بندی شد.': {
+    fa: 'برداشت زعفران پاییز ۱۴۰۴ آغاز شد — اولین محموله سرگل امروز وارد خط بسته‌بندی شد.',
+    en: 'Autumn saffron harvest has begun — the first Sargol batch entered packaging today.',
+  },
+  'New GOTS certified organic cotton line — Now weaving certified organic poplin in 12 base colors.': {
+    fa: 'خط جدید پنبه ارگانیک با گواهی GOTS — بافت پوپلین ارگانیک در ۱۲ رنگ پایه.',
+    en: 'New GOTS certified organic cotton line — Now weaving certified organic poplin in 12 base colors.',
+  },
+  'Belt dryer installation in Tabriz — Our 500 kg/h line is now running at a customer facility in Iran.': {
+    fa: 'نصب خشک‌کن نواری در تبریز — خط ۵۰۰ کیلوگرم بر ساعت ما در کارخانه مشتری راه‌اندازی شد.',
+    en: 'Belt dryer installation in Tabriz — Our 500 kg/h line is now running at a customer facility in Iran.',
+  },
+  'فرش ۷۰ رج جدید کارگاه — بافت طرح سفارشی مشتری آلمانی به پایان رسید.': {
+    fa: 'فرش ۷۰ رج جدید کارگاه — بافت طرح سفارشی مشتری آلمانی به پایان رسید.',
+    en: 'New 70-raj workshop rug — the custom design for our German client is finished.',
+  },
+  'TOPCon bifacial stock arrived in Istanbul — 2,400 modules now available ex-stock for immediate delivery.': {
+    fa: 'موجودی پنل دوطرفه TOPCon به استانبول رسید — ۲٬۴۰۰ ماژول آماده تحویل فوری.',
+    en: 'TOPCon bifacial stock arrived in Istanbul — 2,400 modules now available ex-stock for immediate delivery.',
+  },
+};
+
+/** Per-locale copy for seeded ad campaigns, keyed by campaign name. */
+const AD_COPY = {
+  'Ramadan Sourcing Week': {
+    fa: { headline: 'هفته تأمین رمضان', subtext: 'تخفیف ویژه تأمین‌کنندگان تأییدشده روی خشکبار و مواد غذایی' },
+    en: { headline: 'Ramadan Sourcing Week', subtext: 'Special rates from verified suppliers on nuts and foodstuff' },
+  },
+  'Textile Expo Bursa': {
+    fa: { headline: 'نمایشگاه نساجی بورسا ۲۰۲۶', subtext: 'دیدار با ۱۲۰ کارخانه تأییدشده — رزرو وقت ملاقات' },
+    en: { headline: 'Bursa Textile Expo 2026', subtext: 'Meet 120 verified mills — book a meeting slot' },
+  },
+  'Solar Container Deal': {
+    fa: { headline: 'پیشنهاد کانتینری پنل خورشیدی', subtext: 'قیمت ویژه برای سفارش‌های بالای ۶۰۰ عدد' },
+    en: { headline: 'Solar Container Deal', subtext: 'Special pricing on orders above 600 modules' },
+  },
+};
+
+module.exports = { LISTING_TITLES, BLOG_TITLES, REQUEST_TITLES, STORY_CAPTIONS, AD_COPY };

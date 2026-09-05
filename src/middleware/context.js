@@ -1,5 +1,6 @@
 const { q } = require('../db');
 const i18n = require('../lib/i18n');
+const { localize } = require('../lib/localize');
 const { THEMES, THEME_CODES, cssVars } = require('../lib/themes');
 const H = require('../lib/helpers');
 
@@ -49,6 +50,26 @@ function context(req, res, next) {
   req.user = user;
   req.theme = theme;
   req.currency = currency;
+
+  // --- automatic row localisation ---
+  // Wrap res.render so any row passed to a view gets its `title`/`caption`/`headline`
+  // etc. swapped to the active locale. Doing it here means every current and future
+  // route is covered, rather than each one having to remember to localise.
+  const _render = res.render.bind(res);
+  res.render = (view, opts, cb) => {
+    if (opts && typeof opts === 'object') {
+      for (const key of Object.keys(opts)) {
+        const v = opts[key];
+        if (!v || typeof v !== 'object') continue;
+        if (Array.isArray(v)) {
+          if (v.length && typeof v[0] === 'object') localize(v, locale);
+        } else if (!(v instanceof Date) && Object.getPrototypeOf(v) === Object.prototype) {
+          localize(v, locale);
+        }
+      }
+    }
+    return _render(view, opts, cb);
+  };
 
   // --- view locals ---
   res.locals.locale = locale;

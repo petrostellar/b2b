@@ -272,6 +272,55 @@ r.post('/ads/:id/:action', (req, res) => {
   res.redirect('/admin/ads');
 });
 
+/* ================= VIP HERO BANNERS =================
+   Sellers pay to have a story promoted as the big banner on the homepage. Admin
+   reviews each request, sets the price and the run window, then approves it. Only
+   rows that are approved AND marked paid are ever rendered to visitors. */
+r.get('/vip', (req, res) => {
+  const rows = q.all(`
+    SELECT s.*, u.display_name, p.business_name
+    FROM stories s JOIN users u ON u.id=s.user_id
+    LEFT JOIN profiles p ON p.user_id=u.id
+    WHERE s.is_vip=1
+    ORDER BY CASE s.vip_status WHEN 'pending' THEN 0 WHEN 'active' THEN 1 ELSE 2 END,
+             s.vip_sort DESC, s.id DESC`);
+  res.render('admin/vip', {
+    title: 'بنرهای ویژه VIP', section: 'vip', rows,
+    revenue: q.get(`SELECT COALESCE(SUM(vip_price_minor),0) c FROM stories WHERE is_vip=1 AND vip_paid=1`).c,
+    stories: q.all(`SELECT s.id, s.caption, u.display_name FROM stories s
+                    JOIN users u ON u.id=s.user_id
+                    WHERE s.status='active' AND (s.is_vip IS NULL OR s.is_vip=0)
+                    ORDER BY s.id DESC LIMIT 40`),
+  });
+});
+
+/** Promote an existing story to a VIP banner (admin-created). */
+r.post('/vip', (req, res) => {
+  const b = req.body;
+  if (!b.story_id) { flash(req, 'err', 'استوری را انتخاب کنید'); return res.redirect('/admin/vip'); }
+  q.run(`UPDATE stories SET is_vip=1, vip_status=?, vip_headline=?, vip_subtext=?,
+           vip_link=?, vip_image=?, vip_price_minor=?, vip_currency=?,
+           vip_starts_at=?, vip_ends_at=?, vip_sort=?, vip_paid=?
+         WHERE id=?`,
+    [b.vip_status || 'pending', b.headline || null, b.subtext || null,
+     b.link || null, b.image || null, Math.round((+b.price || 0) * 100), b.currency || 'TRY',
+     b.starts_at || null, b.ends_at || null, +b.sort || 0, b.paid ? 1 : 0, b.story_id]);
+  flash(req, 'ok', 'بنر ویژه ثبت شد');
+  res.redirect('/admin/vip');
+});
+
+r.post('/vip/:id/:action', (req, res) => {
+  const id = req.params.id;
+  const map = { approve: 'active', reject: 'rejected', pause: 'expired', pending: 'pending' };
+  const a = req.params.action;
+  if (map[a]) q.run('UPDATE stories SET vip_status=? WHERE id=?', [map[a], id]);
+  if (a === 'paid') q.run('UPDATE stories SET vip_paid=1 WHERE id=?', [id]);
+  if (a === 'unpaid') q.run('UPDATE stories SET vip_paid=0 WHERE id=?', [id]);
+  if (a === 'remove') q.run(`UPDATE stories SET is_vip=0, vip_status='none' WHERE id=?`, [id]);
+  flash(req, 'ok', 'به‌روزرسانی شد');
+  res.redirect('/admin/vip');
+});
+
 /* ================= ORDERS / PAYMENTS ================= */
 r.get('/orders', (req, res) => {
   res.render('admin/orders', { title: 'سفارش‌ها', section: 'orders',

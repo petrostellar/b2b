@@ -65,6 +65,15 @@ r.get('/blog/:slug', (req, res) => {
 });
 
 /* ---------- Ad click tracking ---------- */
+/** Click-through for a paid VIP hero banner; records the click then forwards. */
+r.get('/vip/:id/click', (req, res) => {
+  const s = q.get('SELECT * FROM stories WHERE id=? AND is_vip=1', [req.params.id]);
+  if (!s) return res.redirect('/');
+  q.run('UPDATE stories SET vip_clicks = vip_clicks + 1 WHERE id=?', [s.id]);
+  H.track('vip_banner_click', { actor_id: req.user ? req.user.id : null, target_type: 'story', target_id: s.id, req });
+  res.redirect(s.vip_link || ('/stories/' + s.id));
+});
+
 r.get('/ads/:id/click', (req, res) => {
   const a = q.get('SELECT * FROM ad_campaigns WHERE id=?', [req.params.id]);
   if (!a) return res.redirect('/');

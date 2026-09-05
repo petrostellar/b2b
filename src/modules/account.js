@@ -9,6 +9,9 @@ const H = require('../lib/helpers');
 const { flash, requireAuth } = require('../middleware/context');
 
 const r = express.Router();
+
+/** Flat listing fee for a VIP homepage banner, in minor units (TRY). */
+const VIP_PRICE_MINOR = 150000;
 const UP = path.join(__dirname, '../../uploads');
 const upload = multer({ dest: UP, limits: { fileSize: 8 * 1024 * 1024 } });
 
@@ -259,13 +262,34 @@ r.get('/stories/new', requireAuth, (req, res) => {
 });
 r.post('/stories/new', requireAuth, upload.single('media'), (req, res) => {
   const days = +req.body.duration_days || 1;
-  q.run(`INSERT INTO stories (user_id,media_path,media_kind,caption,cta_label,cta_type,cta_target_id,expires_at)
-    VALUES (?,?,?,?,?,?,?,datetime('now','+${days} days'))`,
+  q.run(`INSERT INTO stories (user_id,media_path,media_kind,caption,cta_label,cta_type,cta_target_id,status,expires_at)
+    VALUES (?,?,?,?,?,?,?,'active',datetime('now','+${days} days'))`,
     [req.user.id, req.file ? '/uploads/' + req.file.filename : null,
      req.file && req.file.mimetype.startsWith('video') ? 'video' : 'image',
      req.body.caption || null, req.body.cta_label || null, req.body.cta_type || null, +req.body.cta_target_id || null]);
   flash(req, 'ok', 'استوری منتشر شد ✓'); res.redirect('/stories');
 });
+
+/* ---- VIP hero banner: seller-facing request flow ----
+   The seller submits a request with their desired copy; it lands in the admin queue as
+   `pending` and only goes live once an admin approves it and marks the fee as paid. */
+r.get('/stories/:id/vip', requireAuth, (req, res) => {
+  const s = q.get('SELECT * FROM stories WHERE id=? AND user_id=?', [req.params.id, req.user.id]);
+  if (!s) return res.status(404).render('errors/404');
+  res.render('story/vip', { title: res.locals.t('vip_request'), story: s, price: VIP_PRICE_MINOR / 100 });
+});
+
+r.post('/stories/:id/vip', requireAuth, (req, res) => {
+  const s = q.get('SELECT * FROM stories WHERE id=? AND user_id=?', [req.params.id, req.user.id]);
+  if (!s) return res.status(404).render('errors/404');
+  q.run(`UPDATE stories SET is_vip=1, vip_status='pending', vip_price_minor=?, vip_currency='TRY',
+           vip_headline=?, vip_subtext=?, vip_link=?, vip_image=? WHERE id=?`,
+    [VIP_PRICE_MINOR, req.body.headline || null, req.body.subtext || null,
+     req.body.link || null, s.media_path || null, s.id]);
+  flash(req, 'ok', 'درخواست بنر ویژه ثبت شد — پس از تأیید مدیر و پرداخت، روی صفحه اصلی نمایش داده می‌شود.');
+  res.redirect('/stories/' + s.id);
+});
+
 r.get('/stories/:id', (req, res) => {
   const s = q.get(`SELECT s.*, u.display_name, u.avatar, p.business_name FROM stories s JOIN users u ON u.id=s.user_id
     LEFT JOIN profiles p ON p.user_id=u.id WHERE s.id=?`, [req.params.id]);

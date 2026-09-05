@@ -134,9 +134,27 @@ r.get('/', (req, res) => {
                                   WHERE parent_id IN (SELECT id FROM categories WHERE parent_id = c.id)))
     ) AS cnt
     FROM categories c WHERE c.parent_id IS NULL AND c.status='active' ORDER BY c.sort_order, c.id LIMIT 12`);
+  // VIP hero banners: paid, admin-approved stories shown at the very top of the
+  // homepage to every visitor. Only live, paid, in-window entries qualify.
+  const vipBanners = q.all(`
+    SELECT s.id, s.vip_headline AS headline, s.vip_subtext AS subtext,
+           s.vip_image AS image, s.vip_link AS link, s.caption,
+           u.display_name, u.avatar, p.business_name
+    FROM stories s
+    JOIN users u ON u.id = s.user_id
+    LEFT JOIN profiles p ON p.user_id = u.id
+    WHERE s.is_vip = 1 AND s.vip_status = 'active' AND s.vip_paid = 1
+      AND (s.vip_starts_at IS NULL OR date(s.vip_starts_at) <= date('now'))
+      AND (s.vip_ends_at   IS NULL OR date(s.vip_ends_at)   >= date('now'))
+    ORDER BY s.vip_sort DESC, s.id DESC LIMIT 3`);
+  if (vipBanners.length) {
+    q.run(`UPDATE stories SET vip_impressions = vip_impressions + 1 WHERE id IN (${
+      vipBanners.map(() => '?').join(',')})`, vipBanners.map((b) => b.id));
+  }
+
   res.render('catalog/home', {
     title: null,
-    stats, cats,
+    stats, cats, vipBanners,
     trending: searchListings({ sort: 'popular', perPage: 8, locale: res.locals.locale }).rows,
     fresh: searchListings({ sort: 'newest', perPage: 8, locale: res.locals.locale }).rows,
     featured: searchListings({ featured: 1, perPage: 4, locale: res.locals.locale }).rows,

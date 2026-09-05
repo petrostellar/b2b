@@ -1,0 +1,50 @@
+<section class="section-sm"><div class="wrap" style="max-width:720px">
+
+  <span class="eyebrow">VIP</span>
+  <h1 style="margin-top:6px"><%= t('vip_request') %></h1>
+  <p class="small dim">
+    بنر ویژه، بزرگ‌ترین جایگاه تبلیغاتی میدان است: بالای صفحه اصلی، پیش از هر بخش دیگر،
+    برای همه بازدیدکنندگان در تمام زبان‌ها.
+  </p>
+
+  <div class="card card-pad" style="margin:18px 0">
+    <div class="row-between">
+      <div><b><%= t('vip_price') %></b>
+        <div class="xs dim">برای یک دوره نمایش ۱۴ روزه</div></div>
+      <b class="mono" style="font-size:20px;color:var(--gold)"><%= money(price, 'TRY') %></b>
+    </div>
+  </div>
+
+  <% if (story.vip_status === 'pending') { %>
+    <div class="alert warn"><%= t('vip_pending') %> — درخواست شما ثبت شده و در صف بررسی مدیر است.</div>
+  <% } else if (story.vip_status === 'active') { %>
+    <div class="alert ok"><%= t('vip_active') %> — این بنر هم‌اکنون روی صفحه اصلی نمایش داده می‌شود.</div>
+  <% } else if (story.vip_status === 'rejected') { %>
+    <div class="alert err">درخواست قبلی رد شد. می‌توانید با متن بهتری دوباره ارسال کنید.</div>
+  <% } %>
+
+  <form class="card card-pad" method="post" action="/stories/<%= story.id %>/vip">
+    <label class="lbl">عنوان بنر</label>
+    <input name="headline" maxlength="70" required
+           value="<%= story.vip_headline || '' %>"
+           placeholder="یک عنوان کوتاه و جذاب (حداکثر ۷۰ نویسه)">
+
+    <label class="lbl">توضیح کوتاه</label>
+    <input name="subtext" maxlength="140"
+           value="<%= story.vip_subtext || '' %>"
+           placeholder="یک جمله درباره پیشنهاد شما (حداکثر ۱۴۰ نویسه)">
+
+    <label class="lbl">لینک مقصد</label>
+    <input name="link" value="<%= story.vip_link || '' %>"
+           placeholder="/store/your-shop یا /product/your-product">
+
+    <p class="xs dim">
+      تصویر بنر از رسانه همین استوری برداشته می‌شود. پس از ارسال، مدیر درخواست را بررسی می‌کند
+      و پس از تأیید و پرداخت هزینه، بنر روی صفحه اصلی فعال می‌شود.
+    </p>
+
+    <button class="btn btn-primary" style="width:100%">ارسال درخواست</button>
+  </form>
+
+  <a class="btn btn-ghost btn-sm" style="margin-top:14px" href="/stories/<%= story.id %>">← بازگشت به استوری</a>
+</div></section>

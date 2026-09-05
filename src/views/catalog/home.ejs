@@ -1,3 +1,21 @@
+<% if (typeof vipBanners !== 'undefined' && vipBanners.length) { %>
+<section class="vip-strip">
+  <div class="wrap">
+    <% vipBanners.forEach(function(v){ %>
+    <a class="vip-banner" href="/vip/<%= v.id %>/click">
+      <% if (v.image) { %><img class="vip-bg" src="<%= v.image %>" alt="" loading="lazy"><% } %>
+      <div class="vip-body">
+        <span class="vip-badge"><%= t('vip_badge') %></span>
+        <b class="vip-title"><%= v.headline || v.caption %></b>
+        <% if (v.subtext) { %><p class="vip-sub"><%= v.subtext %></p><% } %>
+        <span class="vip-owner"><%= v.business_name || v.display_name %></span>
+      </div>
+      <span class="vip-cta"><%= t('vip_cta') %> →</span>
+    </a><% }) %>
+  </div>
+</section>
+<% } %>
+
 <section class="hero">
   <div class="wrap inner">
     <div class="split-r" style="grid-template-columns:1.15fr .85fr;gap:46px;align-items:center">

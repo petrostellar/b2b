@@ -1,0 +1,101 @@
+<h1>بنرهای ویژه VIP</h1>
+<p class="small dim" style="margin-top:-8px">
+  بنر بزرگ بالای صفحه اصلی که برای همه بازدیدکنندگان نمایش داده می‌شود. فروشنده هزینه می‌پردازد،
+  مدیر تأیید می‌کند و فقط بنرهای «تأییدشده و پرداخت‌شده» روی سایت دیده می‌شوند.
+</p>
+
+<div class="row" style="gap:12px;margin:16px 0">
+  <div class="card card-pad"><div class="xs dim">درآمد ثبت‌شده</div>
+    <b class="mono" style="font-size:19px"><%= money(revenue/100) %></b></div>
+  <div class="card card-pad"><div class="xs dim">در انتظار تأیید</div>
+    <b class="mono" style="font-size:19px"><%= num(rows.filter(function(r){return r.vip_status==='pending'}).length) %></b></div>
+  <div class="card card-pad"><div class="xs dim">فعال</div>
+    <b class="mono" style="font-size:19px"><%= num(rows.filter(function(r){return r.vip_status==='active'}).length) %></b></div>
+</div>
+
+<div class="split-r">
+  <div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th>بنر</th><th>صاحب</th><th>بازه</th><th>هزینه</th>
+      <th>نمایش</th><th>کلیک</th><th>پرداخت</th><th>وضعیت</th><th></th>
+    </tr></thead>
+    <tbody>
+    <% if (!rows.length) { %>
+      <tr><td colspan="9" class="center dim small" style="padding:26px"><%= t('vip_none') %></td></tr>
+    <% } %>
+    <% rows.forEach(function(v){ %>
+    <tr>
+      <td class="small"><b><%= v.vip_headline || (v.caption||'').slice(0,40) %></b>
+        <div class="xs dim"><%= (v.vip_subtext||'').slice(0,60) %></div></td>
+      <td class="small"><%= v.business_name || v.display_name %></td>
+      <td class="xs mono"><%= v.vip_starts_at || '—' %><br><%= v.vip_ends_at || '—' %></td>
+      <td class="mono"><%= money((v.vip_price_minor||0)/100, v.vip_currency) %></td>
+      <td class="mono"><%= num(v.vip_impressions||0) %></td>
+      <td class="mono"><%= num(v.vip_clicks||0) %></td>
+      <td><span class="badge xs <%= v.vip_paid ? 'ok':'warn' %>"><%= v.vip_paid ? 'پرداخت شد':'پرداخت نشده' %></span></td>
+      <td><span class="badge xs <%= tone(v.vip_status) %>"><%= v.vip_status %></span></td>
+      <td><div class="row" style="gap:3px;flex-wrap:wrap">
+        <form method="post" action="/admin/vip/<%= v.id %>/approve"><button class="btn btn-soft btn-sm" title="تأیید">✓</button></form>
+        <form method="post" action="/admin/vip/<%= v.id %>/reject"><button class="btn btn-soft btn-sm" title="رد">✕</button></form>
+        <form method="post" action="/admin/vip/<%= v.id %>/<%= v.vip_paid ? 'unpaid':'paid' %>"><button class="btn btn-soft btn-sm" title="وضعیت پرداخت">💳</button></form>
+        <form method="post" action="/admin/vip/<%= v.id %>/pause"><button class="btn btn-soft btn-sm" title="توقف">⏸</button></form>
+        <form method="post" action="/admin/vip/<%= v.id %>/remove"><button class="btn btn-soft btn-sm" title="حذف از VIP">🗑</button></form>
+      </div></td>
+    </tr><% }) %>
+    </tbody>
+  </table></div>
+
+  <form class="card card-pad" method="post" action="/admin/vip">
+    <h3 style="margin-top:0">ارتقای استوری به بنر ویژه</h3>
+    <label class="lbl">استوری</label>
+    <select name="story_id" required>
+      <option value="">— انتخاب کنید —</option>
+      <% stories.forEach(function(s){ %>
+      <option value="<%= s.id %>"><%= s.display_name %> — <%= (s.caption||'').slice(0,45) %></option>
+      <% }) %>
+    </select>
+
+    <label class="lbl">عنوان بنر</label>
+    <input name="headline" placeholder="مثلاً: زعفران سرگل برداشت جدید">
+
+    <label class="lbl">توضیح کوتاه</label>
+    <input name="subtext" placeholder="یک جمله جذاب برای بازدیدکننده">
+
+    <label class="lbl">تصویر پس‌زمینه (مسیر)</label>
+    <input name="image" placeholder="/img/p/saffron.jpg">
+
+    <label class="lbl">لینک مقصد</label>
+    <input name="link" placeholder="/category/agri">
+
+    <div class="row" style="gap:10px">
+      <div style="flex:1"><label class="lbl">هزینه</label>
+        <input name="price" type="number" step="0.01" min="0" placeholder="1500"></div>
+      <div style="width:110px"><label class="lbl">ارز</label>
+        <select name="currency"><option>TRY</option><option>USD</option><option>EUR</option><option>IRR</option></select></div>
+    </div>
+
+    <div class="row" style="gap:10px">
+      <div style="flex:1"><label class="lbl">شروع</label><input name="starts_at" type="date"></div>
+      <div style="flex:1"><label class="lbl">پایان</label><input name="ends_at" type="date"></div>
+    </div>
+
+    <div class="row" style="gap:10px">
+      <div style="flex:1"><label class="lbl">اولویت نمایش</label>
+        <input name="sort" type="number" value="0"></div>
+      <div style="flex:1"><label class="lbl">وضعیت</label>
+        <select name="vip_status">
+          <option value="pending">در انتظار تأیید</option>
+          <option value="active">تأییدشده و فعال</option>
+        </select></div>
+    </div>
+
+    <label class="row" style="gap:8px;margin:12px 0;align-items:center">
+      <input type="checkbox" name="paid" value="1"> <span class="small">هزینه پرداخت شده است</span>
+    </label>
+
+    <button class="btn btn-primary" style="width:100%">ثبت بنر ویژه</button>
+    <p class="xs dim" style="margin-bottom:0">
+      بنر فقط زمانی روی صفحه اصلی دیده می‌شود که وضعیت «فعال» و تیک پرداخت خورده باشد و تاریخ امروز در بازه باشد.
+    </p>
+  </form>
+</div>
