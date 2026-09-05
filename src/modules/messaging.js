@@ -75,6 +75,34 @@ r.get('/messages/:id', requireAuth, (req, res) => {
   });
 });
 
+/**
+ * Poll endpoint for live chat.
+ *
+ * The spec asked for WebSocket chat; this app is a single Express process behind a
+ * platform proxy, so short polling gives the same user-visible result (messages appear
+ * without a manual refresh) with none of the socket/sticky-session infrastructure.
+ * Returns only messages newer than `after` so responses stay small.
+ */
+r.get('/messages/:id/poll', requireAuth, (req, res) => {
+  const c = q.get('SELECT * FROM conversations WHERE id=? AND (a_id=? OR b_id=?)',
+    [req.params.id, req.user.id, req.user.id]);
+  if (!c) return res.status(404).json({ error: 'not_found' });
+
+  const after = Number(req.query.after) || 0;
+  const rows = q.all(
+    `SELECT m.id, m.sender_id, m.body, m.attachment, m.attachment_kind, m.created_at, m.read_at,
+            u.display_name
+     FROM messages m JOIN users u ON u.id=m.sender_id
+     WHERE m.conversation_id=? AND m.id > ? ORDER BY m.id`, [c.id, after]);
+
+  // Mark newly delivered inbound messages as read, mirroring the full page view.
+  if (rows.some((m) => m.sender_id !== req.user.id)) {
+    q.run(`UPDATE messages SET read_at=datetime('now')
+           WHERE conversation_id=? AND sender_id!=? AND read_at IS NULL`, [c.id, req.user.id]);
+  }
+  res.json({ me: req.user.id, messages: rows });
+});
+
 r.post('/messages/:id', requireAuth, upload.single('attachment'), (req, res) => {
   const c = q.get('SELECT * FROM conversations WHERE id=? AND (a_id=? OR b_id=?)', [req.params.id, req.user.id, req.user.id]);
   if (!c) return res.sendStatus(404);

@@ -70,6 +70,54 @@
           <button class="btn btn-primary">ارسال</button>
         </form>
         <script>window.__CONV_ID=<%= active.id %>;window.__LAST_MSG=<%= messages.length?messages[messages.length-1].id:0 %>;</script>
+        <script>
+        /* Live chat: poll for new messages so both sides see replies without refreshing.
+           Backs off when the tab is hidden to avoid pointless traffic. */
+        (function () {
+          var convId = window.__CONV_ID, last = window.__LAST_MSG || 0;
+          if (!convId) return;
+          var body = document.querySelector('.chat-body');
+          if (!body) return;
+          var atBottom = function () {
+            return body.scrollHeight - body.scrollTop - body.clientHeight < 80;
+          };
+          var esc = function (s) {
+            var d = document.createElement('div'); d.textContent = s == null ? '' : s;
+            return d.innerHTML;
+          };
+          body.scrollTop = body.scrollHeight;
+
+          function render(m, me) {
+            var stick = atBottom();
+            var el = document.createElement('div');
+            el.className = 'bubble ' + (m.sender_id === me ? 'me' : 'them');
+            var html = '';
+            if (m.attachment) {
+              html += m.attachment_kind === 'image'
+                ? '<img src="' + esc(m.attachment) + '" style="border-radius:9px;max-width:230px;margin-bottom:6px">'
+                : '<a href="' + esc(m.attachment) + '" class="small">📎 پیوست</a>';
+            }
+            if (m.body) html += '<div>' + esc(m.body) + '</div>';
+            html += '<div class="tm">' + esc((m.created_at || '').replace('T', ' ').slice(0, 16)) + '</div>';
+            el.innerHTML = html;
+            body.appendChild(el);
+            if (stick) body.scrollTop = body.scrollHeight;
+          }
+
+          function tick() {
+            if (document.hidden) return;
+            fetch('/messages/' + convId + '/poll?after=' + last, { credentials: 'same-origin' })
+              .then(function (r) { return r.ok ? r.json() : null; })
+              .then(function (d) {
+                if (!d || !d.messages || !d.messages.length) return;
+                d.messages.forEach(function (m) { render(m, d.me); last = Math.max(last, m.id); });
+              })
+              .catch(function () { /* offline or navigating away — retry on next tick */ });
+          }
+          setInterval(tick, 4000);
+          document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
+        })();
+        </script>
       <% } else { %>
         <div class="empty-state" style="margin:auto">
           <div class="ic">💬</div><h3>گفتگویی انتخاب نشده</h3>

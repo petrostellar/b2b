@@ -177,6 +177,11 @@ CREATE TABLE IF NOT EXISTS listings (
   category_id INTEGER REFERENCES categories(id),
   slug TEXT UNIQUE,
   title TEXT NOT NULL,
+  -- Per-locale titles. `title` stays the authoring/source value and is always present;
+  -- these are optional overrides resolved at query time (see resolveTitle in catalog.js),
+  -- so existing views that print `l.title` keep working unchanged.
+  title_fa TEXT, title_en TEXT, title_tr TEXT, title_ar TEXT,
+  description_fa TEXT, description_en TEXT, description_tr TEXT, description_ar TEXT,
   listing_type TEXT DEFAULT 'wholesale',  -- wholesale|retail|service|export
   variety TEXT,
   origin_country TEXT, origin_province TEXT, origin_city TEXT,
@@ -669,6 +674,8 @@ CREATE TABLE IF NOT EXISTS faqs (
 CREATE TABLE IF NOT EXISTS blog_posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   slug TEXT UNIQUE, title TEXT, excerpt TEXT, body TEXT, cover TEXT,
+  title_fa TEXT, title_en TEXT, title_tr TEXT, title_ar TEXT,
+  excerpt_fa TEXT, excerpt_en TEXT, excerpt_tr TEXT, excerpt_ar TEXT,
   author_id INTEGER REFERENCES users(id),
   status TEXT DEFAULT 'published',
   created_at TEXT DEFAULT (datetime('now'))

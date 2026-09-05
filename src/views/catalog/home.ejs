@@ -159,7 +159,7 @@
 
 <% if (fresh.length) { %>
 <section class="section"><div class="wrap">
-  <div class="row-between" style="margin-bottom:20px"><h2 style="margin:0">New arrivals</h2>
+  <div class="row-between" style="margin-bottom:20px"><h2 style="margin:0"><%= t('new_arrivals') %></h2>
     <a class="btn btn-ghost btn-sm" href="/products?sort=newest"><%= t('view_all') %> →</a></div>
   <div class="grid g4"><% fresh.forEach(function(l){ %><%- include('../partials/pcard', {l:l}) %><% }) %></div>
 </div></section>
@@ -171,8 +171,12 @@
   <div class="grid g3">
     <% posts.forEach(function(p){ %>
     <a class="card card-hover anim" href="/blog/<%= p.slug %>">
+      <% if (p.cover) { %>
+      <img src="<%= p.cover %>" alt="<%= pick(p,'title') || p.title %>" loading="lazy" style="aspect-ratio:16/9;width:100%;object-fit:cover;display:block">
+      <% } else { %>
       <div style="aspect-ratio:16/9;background:var(--hero);display:grid;place-items:center;font-size:32px">📰</div>
-      <div class="card-pad"><b class="clamp2"><%= p.title %></b><p class="small clamp2" style="margin:8px 0 0"><%= p.excerpt %></p></div>
+      <% } %>
+      <div class="card-pad"><b class="clamp2"><%= pick(p,'title') || p.title %></b><p class="small clamp2" style="margin:8px 0 0"><%= pick(p,'excerpt') || p.excerpt %></p></div>
     </a><% }) %>
   </div>
 </div></section>

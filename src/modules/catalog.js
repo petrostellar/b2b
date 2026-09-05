@@ -32,6 +32,28 @@ function descendants(id) {
 }
 
 /** Backend-driven faceted search. Every filter is a real SQL predicate. */
+/**
+ * Resolve per-locale text on listing rows.
+ *
+ * Views across the app print `l.title` / `l.description` directly (20+ templates), so
+ * rather than touch every one of them we overwrite those fields in place with the
+ * best match for the active locale. Falls back to the source value when a translation
+ * is missing, which means a half-translated catalogue degrades gracefully instead of
+ * rendering blanks.
+ */
+function localizeRows(rows, locale) {
+  if (!rows) return rows;
+  const list = Array.isArray(rows) ? rows : [rows];
+  for (const r of list) {
+    if (!r) continue;
+    const t = r[`title_${locale}`];
+    if (t && String(t).trim()) r.title = t;
+    const d = r[`description_${locale}`];
+    if (d && String(d).trim()) r.description = d;
+  }
+  return rows;
+}
+
 function searchListings(f = {}) {
   const w = [`l.status='approved'`];
   const p = [];
@@ -77,7 +99,9 @@ function searchListings(f = {}) {
 
   const total = q.get(
     `SELECT COUNT(*) c FROM listings l JOIN users u ON u.id=l.seller_id LEFT JOIN profiles p ON p.user_id=u.id ${where}`, p).c;
-  const rows = q.all(`${LISTING_SELECT} ${where} ORDER BY ${order} LIMIT ? OFFSET ?`, [...p, perPage, offset]);
+  const rows = localizeRows(
+    q.all(`${LISTING_SELECT} ${where} ORDER BY ${order} LIMIT ? OFFSET ?`, [...p, perPage, offset]),
+    f.locale || 'fa');
   return { rows, total, page, perPage, pages: Math.max(1, Math.ceil(total / perPage)) };
 }
 
@@ -101,14 +125,21 @@ r.get('/', (req, res) => {
     countries: q.get(`SELECT COUNT(DISTINCT origin_country) c FROM listings WHERE status='approved'`).c,
   };
   const cats = q.all(`
-    SELECT c.*, (SELECT COUNT(*) FROM listings l WHERE l.category_id=c.id AND l.status='approved') AS cnt
+    SELECT c.*, (
+      SELECT COUNT(*) FROM listings l
+      WHERE l.status='approved'
+        AND (l.category_id = c.id
+             OR l.category_id IN (SELECT id FROM categories WHERE parent_id = c.id)
+             OR l.category_id IN (SELECT id FROM categories
+                                  WHERE parent_id IN (SELECT id FROM categories WHERE parent_id = c.id)))
+    ) AS cnt
     FROM categories c WHERE c.parent_id IS NULL AND c.status='active' ORDER BY c.sort_order, c.id LIMIT 12`);
   res.render('catalog/home', {
     title: null,
     stats, cats,
-    trending: searchListings({ sort: 'popular', perPage: 8 }).rows,
-    fresh: searchListings({ sort: 'newest', perPage: 8 }).rows,
-    featured: searchListings({ featured: 1, perPage: 4 }).rows,
+    trending: searchListings({ sort: 'popular', perPage: 8, locale: res.locals.locale }).rows,
+    fresh: searchListings({ sort: 'newest', perPage: 8, locale: res.locals.locale }).rows,
+    featured: searchListings({ featured: 1, perPage: 4, locale: res.locals.locale }).rows,
     suppliers: q.all(`
       SELECT u.id,u.display_name,u.avatar,u.trust_score,p.business_name,p.country,p.city,p.seller_type,p.about,
         (SELECT COUNT(*) FROM listings l WHERE l.seller_id=u.id AND l.status='approved') AS listing_count,
@@ -134,6 +165,7 @@ r.get('/', (req, res) => {
 /* ================= PRODUCTS / SEARCH ================= */
 function renderList(req, res, extra = {}) {
   const f = { ...req.query, ...extra };
+  f.locale = res.locals.locale;
   const result = searchListings(f);
   if (f.q) q.run('INSERT INTO search_events (user_id,q,scope,results) VALUES (?,?,?,?)',
     [req.user ? req.user.id : null, f.q, 'listings', result.total]);
@@ -178,7 +210,7 @@ r.get('/categories', (req, res) => {
 
 /* ================= PRODUCT DETAIL ================= */
 r.get('/product/:slug', (req, res) => {
-  const l = q.get(`${LISTING_SELECT} WHERE l.slug=? OR l.id=?`, [req.params.slug, req.params.slug]);
+  const l = localizeRows(q.get(`${LISTING_SELECT} WHERE l.slug=? OR l.id=?`, [req.params.slug, req.params.slug]), res.locals.locale);
   if (!l) return res.status(404).render('errors/404');
   const owner = req.user && req.user.id === l.seller_id;
   if (l.status !== 'approved' && !owner && !(req.user && req.user.is_admin))
@@ -204,8 +236,8 @@ r.get('/product/:slug', (req, res) => {
     priceHistory: q.all('SELECT * FROM listing_price_history WHERE listing_id=? ORDER BY id DESC LIMIT 6', [l.id]),
     reviews: q.all(`SELECT r.*, u.display_name, u.avatar FROM reviews r JOIN users u ON u.id=r.reviewer_id
                     WHERE r.target_user_id=? AND r.status='published' ORDER BY r.id DESC LIMIT 5`, [l.seller_id]),
-    others: q.all(`${LISTING_SELECT} WHERE l.seller_id=? AND l.id!=? AND l.status='approved' LIMIT 4`, [l.seller_id, l.id]),
-    similar: q.all(`${LISTING_SELECT} WHERE l.category_id=? AND l.id!=? AND l.status='approved' ORDER BY l.boost_rank DESC LIMIT 4`, [l.category_id, l.id]),
+    others: localizeRows(q.all(`${LISTING_SELECT} WHERE l.seller_id=? AND l.id!=? AND l.status='approved' LIMIT 4`, [l.seller_id, l.id]), res.locals.locale),
+    similar: localizeRows(q.all(`${LISTING_SELECT} WHERE l.category_id=? AND l.id!=? AND l.status='approved' ORDER BY l.boost_rank DESC LIMIT 4`, [l.category_id, l.id]), res.locals.locale),
     breadcrumb: (() => {
       const path = []; let c = l.category_id ? q.get('SELECT * FROM categories WHERE id=?', [l.category_id]) : null;
       while (c) { path.unshift(c); c = c.parent_id ? q.get('SELECT * FROM categories WHERE id=?', [c.parent_id]) : null; }
@@ -264,7 +296,7 @@ r.get('/u/:id', (req, res) => {
     u,
     verified: H.isVerified(u.id),
     trust: u.trust_score,
-    listings: q.all(`${LISTING_SELECT} WHERE l.seller_id=? AND l.status='approved' ORDER BY l.boost_rank DESC, l.id DESC LIMIT 12`, [u.id]),
+    listings: localizeRows(q.all(`${LISTING_SELECT} WHERE l.seller_id=? AND l.status='approved' ORDER BY l.boost_rank DESC, l.id DESC LIMIT 12`, [u.id]), res.locals.locale),
     requests: q.all(`SELECT * FROM buy_requests WHERE buyer_id=? AND status='approved' ORDER BY id DESC LIMIT 8`, [u.id]),
     reviews: q.all(`SELECT r.*, ru.display_name, ru.avatar FROM reviews r JOIN users ru ON ru.id=r.reviewer_id
                     WHERE r.target_user_id=? AND r.status='published' ORDER BY r.id DESC`, [u.id]),

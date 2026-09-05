@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const { db, q, migrate } = require('./index');
 const { THEMES, THEME_CODES } = require('../lib/themes');
 const H = require('../lib/helpers');
+const { LISTING_TITLES, BLOG_TITLES } = require('./translations');
 
 migrate();
 
@@ -338,10 +339,26 @@ const POSTS = [
     '<h3>حواله (TT)</h3>' + P('سریع و ارزان اما ریسک را کاملاً به یک طرف منتقل می‌کند.') +
     '<h3>اسکرو</h3>' + P('تعادل مناسب برای معاملات متوسط؛ در مایدان به صورت داخلی پشتیبانی می‌شود.')],
 ];
-POSTS.forEach(([slug, title, ex, body]) => up(
-  `INSERT INTO blog_posts (slug,title,excerpt,body,status) VALUES (?,?,?,?,'published')
-   ON CONFLICT(slug) DO UPDATE SET title=excluded.title, excerpt=excluded.excerpt, body=excluded.body`,
-  [slug, title, ex, body]));
+const BLOG_COVERS = {
+  'rfq-best-practices': '/img/blog/rfq.jpg',
+  'trust-signals': '/img/blog/trust.jpg',
+  'cross-border-payment': '/img/blog/payment.jpg',
+  'export-saffron-guide': '/img/blog/saffron-export.jpg',
+  'incoterms-2020': '/img/blog/incoterms.jpg',
+};
+POSTS.forEach(([slug, title, ex, body]) => {
+  const tr = BLOG_TITLES[title] || {};
+  up(`INSERT INTO blog_posts (slug,title,excerpt,body,status,cover,
+        title_fa,title_en,excerpt_fa,excerpt_en)
+      VALUES (?,?,?,?,'published',?,?,?,?,?)
+      ON CONFLICT(slug) DO UPDATE SET title=excluded.title, excerpt=excluded.excerpt,
+        body=excluded.body, cover=excluded.cover,
+        title_fa=excluded.title_fa, title_en=excluded.title_en,
+        excerpt_fa=excluded.excerpt_fa, excerpt_en=excluded.excerpt_en`,
+    [slug, title, ex, body, BLOG_COVERS[slug] || null,
+     (tr.fa||{}).title || null, (tr.en||{}).title || null,
+     (tr.fa||{}).excerpt || null, (tr.en||{}).excerpt || null]);
+});
 
 /* ---------------- users ---------------- */
 function ensureUser(o) {
@@ -598,6 +615,8 @@ function ensureListing(L) {
        Math.random() < 0.35 ? 1 : 0, rnd(0, 3), rnd(120, 4800), rnd(1, 60)]);
     row = q.get('SELECT * FROM listings WHERE title=? AND seller_id=?', [L.title, seller.id]);
     up('UPDATE listings SET slug=? WHERE id=?', [H.slugify(L.title, row.id), row.id]);
+    const tr = LISTING_TITLES[L.title];
+    if (tr) up('UPDATE listings SET title_fa=?, title_en=? WHERE id=?', [tr.fa || null, tr.en || null, row.id]);
     up('INSERT INTO listing_status_history (listing_id,from_status,to_status,actor_id,reason) VALUES (?,?,?,?,?)',
       [row.id, 'pending_review', 'approved', admin.id, 'اطلاعات کامل و تصاویر معتبر']);
     up('INSERT INTO listing_price_history (listing_id,old_price,new_price,currency,price_unit,reason,actor_id) VALUES (?,?,?,?,?,?,?)',
@@ -633,6 +652,8 @@ const PHOTOS = [
   ['/img/p/solar.jpg', ['Monocrystalline PV Module']],
   ['/img/p/freight.jpg', ['خدمات حمل زمینی', 'Customs Clearance']],
   ['/img/p/pistachio.jpg', ['پسته اکبری', 'کشمش پلویی']],
+  ['/img/p/surgical-gown.jpg', ['Sterile Surgical Gown']],
+  ['/img/p/centrifuge.jpg', ['Benchtop Laboratory Centrifuge']],
 ];
 PHOTOS.forEach(([path, keys]) => keys.forEach((k) => {
   q.all('SELECT id FROM listings WHERE title LIKE ?', ['%' + k + '%']).forEach((row) => {
@@ -851,7 +872,7 @@ const storyCols = q.all('PRAGMA table_info(stories)').map((c) => c.name);
   .forEach(([si, title, body]) => {
     if (q.get('SELECT 1 x FROM stories WHERE caption LIKE ?', [title + '%'])) return;
     up(`INSERT INTO stories (user_id,media_kind,caption,cta_label,cta_type,status,expires_at,views_count)
-        VALUES (?, 'text', ?, ?, 'profile', 'published', datetime('now','+7 days'), ?)`,
+        VALUES (?, 'text', ?, ?, 'profile', 'active', datetime('now','+7 days'), ?)`,
       [sellers[si].id, title + ' — ' + body, 'مشاهده غرفه', rnd(20, 600)]);
   });
 
